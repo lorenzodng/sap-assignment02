@@ -5,141 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tracciamento spedizione</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-        <style>
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0
-            }
-
-            body {
-                font-family: system-ui, sans-serif;
-                background: #eeeeee;
-                min-height: 100vh;
-                padding: 2rem
-            }
-
-            .wrapper {
-                width: 100%;
-                max-width: 1100px;
-                margin: 0 auto;
-                padding: 2rem 0
-            }
-
-            .page-title {
-                font-size: 23px;
-                font-weight: 500;
-                color: #1a1a1a;
-                text-align: center;
-                margin-bottom: 2rem
-            }
-
-            .card {
-                background: #ffffff;
-                border: 0.5px solid #e5e5e5;
-                border-radius: 12px;
-                padding: 1.5rem;
-            }
-
-            .stats {
-                display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 10px;
-                margin-bottom: 1rem
-            }
-
-            .stat {
-                background: #f5f5f5;
-                border-radius: 8px;
-                padding: 1rem;
-                text-align: center;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column
-            }
-
-            .stat-val {
-                font-size: 18px;
-                font-weight: 500;
-                color: #1a1a1a
-            }
-
-            .stat-label {
-                font-size: 14px;
-                color: #666666;
-                margin-top: 4px
-            }
-
-            #map {
-                height: 500px;
-                border-radius: 8px;
-                border: 0.5px solid #e5e5e5
-            }
-
-            .badge {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                font-size: 18px;
-                font-weight: 500;
-                padding: 4px 12px;
-                border-radius: 20px
-            }
-
-            .badge-scheduled {
-                background: #E6F1FB;
-                color: #0C447C
-            }
-
-            .badge-in_progress {
-                background: #FAEEDA;
-                color: #633806
-            }
-
-            .badge-completed {
-                background: #EAF3DE;
-                color: #27500A
-            }
-
-            .badge-cancelled {
-                background: #FCEBEB;
-                color: #791F1F
-            }
-
-            .dot {
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background: currentColor
-            }
-
-            .id-box {
-                font-family: monospace;
-                font-size: 12px;
-                color: #999999;
-                margin-bottom: 20px;
-            }
-
-            .update-info {
-                font-size: 12px;
-                color: #999999;
-                margin-top: 10px;
-                text-align: right
-            }
-
-            .msg {
-                font-size: 13px;
-                padding: 10px 14px;
-                border-radius: 8px;
-                margin-top: 1rem
-            }
-
-            .msg-error {
-                background: #fcebeb;
-                color: #a32d2d
-            }
-        </style>
+        <link rel="stylesheet" href="css/tracking.css">
     </head>
 
     <body>
@@ -162,112 +28,18 @@
                         <div class="stat-label">Posizione drone</div>
                     </div>
                 </div>
-                <div id="map"></div>
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div id="map-placeholder">
+                        <p>Drone in attesa della partenza...</p>
+                        <div class="spinner"></div>
+                    </div>
+                </div>
                 <div class="update-info" id="updateInfo"></div>
             </div>
         </div>
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script>
-            const BASE = 'http://localhost:8080'; //url api-gateway
-            const params = new URLSearchParams(window.location.search);
-            const shipmentId = params.get('id'); //legge i parametri dell'url della pagina (l'id della spedizione)
-            let map = null, droneMarker = null, trackInterval = null; //variabili per il tracking
-
-            document.getElementById('shipmentId').textContent = shipmentId ? 'Codice spedizione: ' + shipmentId : 'ID non trovato';
-
-            //stato in italiano
-            const statusLabels = {
-                SCHEDULED: 'In attesa',
-                IN_PROGRESS: 'In consegna',
-                COMPLETED: 'Completata',
-                CANCELLED: 'Annullata'
-            };
-
-            //classi corrispondenti agli stati
-            const statusClasses = {
-                SCHEDULED: 'badge-scheduled',
-                IN_PROGRESS: 'badge-in_progress',
-                COMPLETED: 'badge-completed',
-                CANCELLED: 'badge-cancelled'
-            };
-
-            //inizializza la mappa Leaflet (è una libreria usata per mostrare la mappa)
-            function initMap(lat, lon) {
-                map = L.map('map').setView([lat, lon], 14);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap'}).addTo(map);
-
-                //mostra il marker del drone sulla mappa
-                const droneIcon = L.divIcon({
-                    html: '<div style="width:16px;height:16px;border-radius:50%;background:#378ADD;border:2.5px solid #fff"></div>',
-                    className: '',
-                    iconAnchor: [8, 8]
-                });
-                droneMarker = L.marker([lat, lon], {icon: droneIcon}).addTo(map).bindPopup('Drone');
-            }
-
-            //funzione di aggiornamento dello stato, della posizione del drone sulla mappa, del tempo rimanente e dell'orario dell'ultimo aggiornamento
-            async function update() {
-                if (!shipmentId) return;
-                try {
-                    //esegue le tre chiamate in parallelo e attende che siano completate
-                    const [sRes, pRes, tRes] = await Promise.all([
-                        fetch(BASE + '/shipments/' + shipmentId + '/status'),
-                        fetch(BASE + '/shipments/' + shipmentId + '/position'),
-                        fetch(BASE + '/shipments/' + shipmentId + '/remaining-time')
-                    ]);
-
-                    //crea l'etichetta di stato in italiano
-                    const status = await sRes.json();
-                    const label = statusLabels[status.status] || status.status;
-                    const cls = statusClasses[status.status] || '';
-
-                    //aggiorna lo stato con il colore appropriato
-                    document.getElementById('statStatus').innerHTML = `<span class="badge ${cls}">${label}</span>`;
-
-                    //aggiorna la posizione del drone sulla mappa
-                    if (pRes.ok) {
-                        const pos = await pRes.json();
-                        document.getElementById('statPos').textContent = pos.latitude.toFixed(4) + ', ' + pos.longitude.toFixed(4);
-                        if (!map) {
-                            initMap(pos.latitude, pos.longitude);
-                        } else {
-                            droneMarker.setLatLng([pos.latitude, pos.longitude]);
-                            map.panTo([pos.latitude, pos.longitude]);
-                        }
-                    }
-
-                    //aggiorna il tempo rimanente
-                    if (tRes.ok) {
-                        const t = await tRes.json();
-                        document.getElementById('statTime').textContent = t.remainingMinutes + ' min';
-                    }
-
-                    document.getElementById('updateInfo').textContent = 'Aggiornato alle ' + new Date().toLocaleTimeString();
-
-                    //termina la spedizione se completata o cancellata
-                    if (status.status === 'COMPLETED' || status.status === 'CANCELLED') {
-                        stopTracking();
-                    }
-
-                } catch (e) {
-                    document.getElementById('updateInfo').textContent = 'Errore di connessione';
-                }
-            }
-
-            //ferma l'aggiornamento
-            function stopTracking() {
-                if (trackInterval) {
-                    clearInterval(trackInterval);
-                    trackInterval = null;
-                }
-            }
-
-            //avvia l'aggiornamento
-            if (shipmentId) {
-                update();
-                trackInterval = setInterval(update, 2000);
-            }
-        </script>
+        <script src="js/tracking.js"></script>
     </body>
 </html>

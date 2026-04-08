@@ -1,0 +1,144 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    background: #eeeeee;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0
+}
+
+.page-title {
+    font-size: 23px;
+    font-weight: 500;
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 6px
+}
+
+.page-sub {
+    font-size: 14px;
+    color: #666666;
+    text-align: center;
+    margin-bottom: 2rem
+}
+
+.form-card {
+    background: #ffffff;
+    border: 0.5px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 1.75rem 2rem
+}
+
+.section-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #999999;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid #e5e5e5
+}
+
+.section-label:not(:first-of-type) {
+    margin-top: 30px;
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 1.5rem
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+.field.full {
+    grid-column: 1/-1
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a
+}
+
+.field input, .field select {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 0.5px solid #d4d4d4;
+    background: #ffffff;
+    color: #1a1a1a;
+    transition: border-color .15s, box-shadow .15s;
+    width: 100%
+}
+
+.field input:focus, .field select:focus {
+    outline: none;
+    border-color: #378ADD;
+    box-shadow: 0 0 0 3px rgba(55, 138, 221, .15)
+}
+
+.section-gap {
+    margin-bottom: 1.5rem
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background .15s, opacity .15s;
+    background: #378ADD;
+    color: #E6F1FB;
+    margin-top: 7px;
+
+}
+
+.submit-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed
+}
+
+.submit-btn:not(:disabled):hover {
+    background: #185FA5
+}
+
+.msg {
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center
+}
+
+.msg-success {
+    background: #eaf3de;
+    color: #3b6d11
+}
+
+.msg-error {
+    background: #fcebeb;
+    color: #a32d2d
+}

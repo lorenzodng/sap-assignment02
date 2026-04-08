@@ -32,7 +32,6 @@ public class ShipmentRequestOrchestratorImpl implements ShipmentRequestOrchestra
         } else {
             metrics.incrementValidation(false);
             return Future.failedFuture("VALIDATION_FAILED"); //se si verificano errori in fase di creazione o validazione
-
         }
     }
 }

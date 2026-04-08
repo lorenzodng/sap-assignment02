@@ -16,9 +16,10 @@ public class DeliveryServiceMain {
     private static final Logger log = LoggerFactory.getLogger(DeliveryServiceMain.class);
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure().directory("delivery-service").load(); //carica le variabili del file .env
-        int port = Integer.parseInt(dotenv.get("PORT"));
-        int metricsPort = Integer.parseInt(dotenv.get("METRICS_PORT")); //legge la porta per Prometheus
+        Dotenv dotenv = Dotenv.configure().directory("delivery-service").ignoreIfMissing().load();
+
+        int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
+        int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();

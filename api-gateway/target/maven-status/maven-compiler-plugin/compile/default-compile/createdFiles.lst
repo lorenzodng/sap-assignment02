@@ -1,0 +1,7 @@
+gateway\infrastructure\HealthChecker.class
+gateway\infrastructure\ApiGatewayController.class
+gateway\ApiGatewayMain.class
+buildingblocks\application\OutboundPort.class
+gateway\infrastructure\ApiGatewayMetricsController.class
+buildingblocks\infrastructure\Adapter.class
+gateway\application\ApiGatewayMetrics.class

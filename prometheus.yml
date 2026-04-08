@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:9080']
+
+  - job_name: 'request-service'
+    static_configs:
+      - targets: ['request-service:9081']
+
+  - job_name: 'drone-service'
+    static_configs:
+      - targets: ['drone-service:9082']
+
+  - job_name: 'delivery-service'
+    static_configs:
+      - targets: ['delivery-service:9083']

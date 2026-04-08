@@ -16,12 +16,13 @@ public class ApiGatewayMain {
     private static final Logger log = LoggerFactory.getLogger(ApiGatewayMain.class);
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure().directory("api-gateway").load(); //carica il .env
-        String requestServiceUrl = dotenv.get("REQUEST_SERVICE_URL"); //legge il primo url
-        String droneServiceUrl = dotenv.get("DRONE_SERVICE_URL"); //legge il secondo url
-        String deliveryServiceUrl = dotenv.get("DELIVERY_SERVICE_URL"); //legge il terzo url
-        int port = Integer.parseInt(dotenv.get("PORT"));
-        int metricsPort = Integer.parseInt(dotenv.get("METRICS_PORT"));
+        Dotenv dotenv = Dotenv.configure().directory("api-gateway").ignoreIfMissing().load();
+
+        String requestServiceUrl = System.getenv("REQUEST_SERVICE_URL") != null ? System.getenv("REQUEST_SERVICE_URL") : dotenv.get("REQUEST_SERVICE_URL");
+        String droneServiceUrl = System.getenv("DRONE_SERVICE_URL") != null ? System.getenv("DRONE_SERVICE_URL") : dotenv.get("DRONE_SERVICE_URL");
+        String deliveryServiceUrl = System.getenv("DELIVERY_SERVICE_URL") != null ? System.getenv("DELIVERY_SERVICE_URL") : dotenv.get("DELIVERY_SERVICE_URL");
+        int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
+        int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
