@@ -1,12 +1,9 @@
 package drone;
 
-import drone.infrastructure.DeliveryServiceClient;
-import drone.infrastructure.DroneAssignmentController;
-import drone.infrastructure.HealthController;
+import drone.application.*;
+import drone.infrastructure.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.vertx.core.Vertx;
-import drone.application.AssignDroneImpl;
-import drone.application.CheckDroneAvailabilityImpl;
 import drone.domain.Drone;
 import drone.domain.Position;
 import java.util.ArrayList;
@@ -23,13 +20,10 @@ public class DroneServiceMain {
         Dotenv dotenv = Dotenv.configure().directory("drone-service").load(); //carica le variabili del file .env
         String deliveryServiceUrl = dotenv.get("DELIVERY_SERVICE_URL");
         int port = Integer.parseInt(dotenv.get("PORT"));
+        int metricsPort = Integer.parseInt(dotenv.get("METRICS_PORT")); //legge la porta per prometheus
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
-
-        //crea i use case
-        CheckDroneAvailabilityImpl checkDroneAvailability = new CheckDroneAvailabilityImpl();
-        AssignDroneImpl assignDrone = new AssignDroneImpl(checkDroneAvailability);
 
         //crea la flotta di droni (posizionati a Roma)
         List<Drone> drones = new ArrayList<>();
@@ -37,12 +31,29 @@ public class DroneServiceMain {
         drones.add(new Drone("drone-2", new Position(41.91, 12.50)));
         drones.add(new Drone("drone-3", new Position(41.92, 12.51)));
 
-        //crea il client
-        DeliveryServiceClient deliveryServiceClient = new DeliveryServiceClient(vertx, deliveryServiceUrl);
+        //crea i use case
+        CheckDroneAvailability checker = new CheckDroneAvailabilityImpl();
+        AssignDrone assigner = new AssignDroneImpl(checker);
+
+        //crea il livello infrastruttura
+        DroneRepository droneRepository = new InMemoryDroneRepository(drones);
+        DeliveryServiceNotifier deliveryNotifier = new DeliveryServiceClient(vertx, deliveryServiceUrl);
 
         //crea i controller
-        DroneAssignmentController droneController = new DroneAssignmentController(assignDrone, drones, deliveryServiceClient);
         HealthController healthController = new HealthController();
+        DroneMetrics metrics = null;
+        try {
+            metrics = new DroneMetricsController(metricsPort);
+            log.info("Prometheus metrics available on port {}", metricsPort);
+        } catch (Exception e) {
+            log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
+        }
+
+        //crea l'orchestratore
+        DroneAssignmentOrchestrator orchestrator = new DroneAssignmentOrchestratorImpl(assigner, deliveryNotifier, droneRepository, metrics);
+
+        //crea il controller
+        DroneAssignmentController droneController = new DroneAssignmentController(orchestrator);
 
         //crea il router e registra le rotte
         Router router = Router.router(vertx);

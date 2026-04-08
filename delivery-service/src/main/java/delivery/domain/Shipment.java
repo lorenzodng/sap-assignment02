@@ -1,14 +1,13 @@
 package delivery.domain;
 
 import buildingblocks.domain.AggregateRoot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 //questo è un esempio della proprietà di modello indipendente del bounded context: Shipment di questo microservizio è diverso da Shipment del gestore richieste
 
 public class Shipment implements AggregateRoot<String> {
 
-    private static final Logger log = LoggerFactory.getLogger(Shipment.class);
+    private static final double MS_TO_HOURS = 3600000.0;
+    private static final int MINUTES_IN_HOUR = 60;
     private final String id;
     private Position droneInitialPosition;
     private Position pickupPosition;
@@ -16,6 +15,7 @@ public class Shipment implements AggregateRoot<String> {
     private long assignedAt;
     private double deliverySpeed;
     private ShipmentStatus status;
+    private boolean completionNotified = false; //flag per aggiornare la metrica solo una volta quando la consegna è stata completata
 
     //costruttore principale
     public Shipment(String id, Position droneInitialPosition, Position pickupPosition, Position deliveryPosition, long assignedAt, double deliverySpeed) {
@@ -47,7 +47,7 @@ public class Shipment implements AggregateRoot<String> {
             return null;
         }
 
-        double elapsedHours = (System.currentTimeMillis() - assignedAt) / 3600000.0; //calcolo le ore trascorse dall'assegnazione del drone
+        double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS; //calcolo le ore trascorse dall'assegnazione del drone
         double distanceCovered = deliverySpeed * elapsedHours; //calcola la distanza percorsa dal drone
 
         //prima fase: drone si muove verso il luogo di ritiro
@@ -90,11 +90,11 @@ public class Shipment implements AggregateRoot<String> {
         if (droneInitialPosition == null) {
             return 0;
         }
-        double elapsedHours = (System.currentTimeMillis() - assignedAt) / 3600000.0; //calcola le ore trascorse dall'assegnazione del drone
+        double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS; //calcola le ore trascorse dall'assegnazione del drone
         double distanceCovered = deliverySpeed * elapsedHours; //calcola la distanza totale percorsa dal drone
         double totalDistance = calculateDistance(droneInitialPosition, pickupPosition) + calculateDistance(pickupPosition, deliveryPosition); //calcola la distanza totale che il drone deve percorrere (base->ritiro + ritiro->destinazione)
         double remainingDistance = Math.max(0, totalDistance - distanceCovered); //calcola la distanza rimanente (distanza totale - distanza già percorsa)
-        return (int) Math.ceil((remainingDistance / deliverySpeed) * 60); //converte la distanza rimanente in minuti (senza secondi), arrotondando per eccesso
+        return (int) Math.ceil((remainingDistance / deliverySpeed) * MINUTES_IN_HOUR); //converte la distanza rimanente in minuti (senza secondi), arrotondando per eccesso
     }
 
     @Override
@@ -105,7 +105,7 @@ public class Shipment implements AggregateRoot<String> {
     //restituisce lo stato in base alla posizione del drone
     public ShipmentStatus getStatus() {
         if (droneInitialPosition != null) {
-            double elapsedHours = (System.currentTimeMillis() - assignedAt) / 3600000.0; //calcola le ore trascorse dall'assegnazione del drone alla spedizione
+            double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS; //calcola le ore trascorse dall'assegnazione del drone alla spedizione
             double distanceCovered = deliverySpeed * elapsedHours; //calcola la distanza totale percorsa dal drone
             double distanceToPickup = calculateDistance(droneInitialPosition, pickupPosition); //calcola la distanza dalla posizione iniziale del drone al luogo di ritiro
             double totalDistance = distanceToPickup + calculateDistance(pickupPosition, deliveryPosition); //calcola la distanza totale che il drone deve percorrere
@@ -116,6 +116,14 @@ public class Shipment implements AggregateRoot<String> {
             }
         }
         return status;
+    }
+
+    public boolean isJustCompleted() {
+        return getStatus() == ShipmentStatus.COMPLETED && !completionNotified;
+    }
+
+    public void markCompletionAsNotified() {
+        completionNotified = true;
     }
 
 }

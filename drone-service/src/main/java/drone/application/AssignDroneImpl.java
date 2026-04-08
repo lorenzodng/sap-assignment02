@@ -1,6 +1,7 @@
 package drone.application;
 
 import drone.domain.Drone;
+import drone.domain.GeoUtils;
 import drone.domain.Position;
 import java.util.List;
 
@@ -25,18 +26,14 @@ public class AssignDroneImpl implements AssignDrone {
          - verifica le caratteristiche del drone
          3) tra tutti quelli che hanno passato i filtri, trova quello che ha distanza minima dal luogo di ritiro (drone 1 vs drone 2, drone 2 vs drone 3, ecc.), altrimenti restituisce null
          */
-        return drones.stream().filter(drone -> drone.isAvailable()).filter(drone -> {
-            double distanceDroneToPickup = calculateDistance(drone.getPosition(), pickupPosition);
+        return drones.stream().filter(Drone::isAvailable).filter(drone -> {
+            double distanceDroneToPickup = calculateDistanceInKm(drone.getPosition(), pickupPosition);
             return checkDroneAvailability.check(drone, packageWeight, distanceDroneToPickup, distancePickupToDelivery, deliveryTimeLimit);
-        }).min((d1, d2) -> Double.compare(calculateDistance(d1.getPosition(), pickupPosition), calculateDistance(d2.getPosition(), pickupPosition))).orElse(null);
+        }).min((d1, d2) -> Double.compare(calculateDistanceInKm(d1.getPosition(), pickupPosition), calculateDistanceInKm(d2.getPosition(), pickupPosition))).orElse(null);
     }
 
-    //calcola la distanza in km tra due posizioni
-    private double calculateDistance(Position p1, Position p2) {
-        final int R = 6371; //raggio della Terra in km
-        double dLat = Math.toRadians(p2.getLatitude() - p1.getLatitude());
-        double dLon = Math.toRadians(p2.getLongitude() - p1.getLongitude());
-        double haversine = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(Math.toRadians(p1.getLatitude())) * Math.cos(Math.toRadians(p2.getLatitude())) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1-haversine));
+    //calcola la distanza in km tra la base e il luogo di pickup
+    private double calculateDistanceInKm(Position p1, Position p2) {
+        return GeoUtils.haversine(p1.getLatitude(), p1.getLongitude(), p2.getLatitude(), p2.getLongitude());
     }
 }

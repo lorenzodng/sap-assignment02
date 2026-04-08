@@ -1,5 +1,7 @@
 package gateway;
 
+import gateway.application.ApiGatewayMetrics;
+import gateway.infrastructure.ApiGatewayMetricsController;
 import gateway.infrastructure.HealthChecker;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.vertx.core.Vertx;
@@ -18,14 +20,21 @@ public class ApiGatewayMain {
         String requestServiceUrl = dotenv.get("REQUEST_SERVICE_URL"); //legge il primo url
         String droneServiceUrl = dotenv.get("DRONE_SERVICE_URL"); //legge il secondo url
         String deliveryServiceUrl = dotenv.get("DELIVERY_SERVICE_URL"); //legge il terzo url
-
         int port = Integer.parseInt(dotenv.get("PORT"));
+        int metricsPort = Integer.parseInt(dotenv.get("METRICS_PORT"));
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
-        //crea il controller
-        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl);
+        //crea i controller
+        ApiGatewayMetrics metrics = null;
+        try {
+            metrics = new ApiGatewayMetricsController(metricsPort);
+            log.info("Prometheus metrics available on port {}", metricsPort);
+        } catch (Exception e) {
+            log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
+        }
+        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics);
 
         //crea l'health checker
         HealthChecker healthChecker = new HealthChecker(vertx, requestServiceUrl, droneServiceUrl, deliveryServiceUrl);

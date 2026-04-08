@@ -2,7 +2,6 @@ package drone.application;
 
 import buildingblocks.application.InboundPort;
 import drone.domain.Drone;
-
 import java.util.List;
 
 @InboundPort

@@ -1,10 +1,10 @@
 package drone.infrastructure;
 
 import buildingblocks.infrastructure.Adapter;
+import drone.application.DeliveryServiceNotifier;
 import drone.domain.Drone;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.core.buffer.Buffer;
 import org.json.JSONObject;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 //client che notifica l'assegnazione del drone verso delivery-service
 @Adapter
-public class DeliveryServiceClient {
+public class DeliveryServiceClient implements DeliveryServiceNotifier {
 
     private static final Logger log = LoggerFactory.getLogger(DeliveryServiceClient.class);
     private final WebClient client;
@@ -29,7 +29,8 @@ public class DeliveryServiceClient {
     1) request-service contatta drone-service (in DroneAssignment)
     2) drone-service aspetta la risposta di stato da delivery-service per sapere cosa rispondere a request-service (con "assignDroneToShipment" in DroneAssignment)
     */
-    public Future<HttpResponse<Buffer>> notifyDroneAssigned(String shipmentId, Drone drone, double pickupLatitude, double pickupLongitude, double deliveryLatitude, double deliveryLongitude) {
+    @Override
+    public Future<Void> notifyDroneAssigned(String shipmentId, Drone drone, double pickupLatitude, double pickupLongitude, double deliveryLatitude, double deliveryLongitude) {
 
         //costruisce il messaggio
         JSONObject body = new JSONObject();
@@ -48,7 +49,8 @@ public class DeliveryServiceClient {
                 .onSuccess(res -> { //in caso di successo
                     log.info("Drone {} assigned to shipment {}", drone.getId(), shipmentId);
                     log.info("Shipment {} drone assigned notified", shipmentId);
-                }).onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)); //in caso di fallimento
+                }).onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)) //in caso di fallimento
+                .mapEmpty(); //trasforma il risultato in Future<Void>
     }
 
     //invia il messaggio di drone non disponibile
@@ -56,7 +58,8 @@ public class DeliveryServiceClient {
     1) request-service contatta drone-service (in DroneAssignment)
     2) drone-service aspetta la risposta di stato da delivery-service per sapere cosa rispondere a request-service (con "assignDroneToShipment" in DroneAssignment)
     */
-    public Future<HttpResponse<Buffer>> notifyDroneNotAvailable(String shipmentId) {
+    @Override
+    public Future<Void> notifyDroneNotAvailable(String shipmentId) {
 
         //costruisce il messaggio
         JSONObject body = new JSONObject();
@@ -66,6 +69,7 @@ public class DeliveryServiceClient {
                 .onSuccess(res -> { //in caso di successo
                     log.warn("No available drones for shipment {}", shipmentId);
                     log.warn("Shipment {} drone not available notified", shipmentId);
-                }).onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)); //in caso di fallimento
+                }).onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)) //in caso di fallimento
+                .mapEmpty(); //trasforma il risultato in Future<Void>
     }
 }
