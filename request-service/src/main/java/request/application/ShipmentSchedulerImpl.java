@@ -8,8 +8,17 @@ import java.time.LocalDateTime;
 //verifica se è il tempo di assegnare il drone
 public class ShipmentSchedulerImpl implements ShipmentScheduler {
 
+    private final DroneServiceNotifier droneServiceNotifier;
+    private final Vertx vertx;
+
+    public ShipmentSchedulerImpl(DroneServiceNotifier droneServiceNotifier, Vertx vertx) {
+        this.droneServiceNotifier = droneServiceNotifier;
+        this.vertx = vertx;
+    }
+
+
     @Override
-    public Future<Void> schedule(Shipment shipment, DroneServiceNotifier droneServiceNotifier, Vertx vertx) {
+    public Future<Void> schedule(Shipment shipment) {
         LocalDateTime pickupDateTime = LocalDateTime.of(shipment.getPickupDate(), shipment.getPickupTime());
         long delayMs = java.time.Duration.between(LocalDateTime.now(), pickupDateTime).toMillis();
 

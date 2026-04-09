@@ -1,4 +1,4 @@
-package drone.domain;
+package delivery.domain;
 
 //classe di utilità che calcola la distanza tra due punti usando la formula di Haversine
 public class GeoUtils {

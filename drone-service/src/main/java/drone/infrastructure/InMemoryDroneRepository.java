@@ -14,7 +14,9 @@ public class InMemoryDroneRepository implements DroneRepository {
 
     //recupera tutti i droni esistenti
     @Override
-    public List<Drone> findAll() { return drones; }
+    public List<Drone> findAll() {
+        return drones;
+    }
 
     //aggiorna il drone come non disponibile
     @Override

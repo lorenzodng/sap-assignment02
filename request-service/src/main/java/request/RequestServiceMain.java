@@ -25,13 +25,13 @@ public class RequestServiceMain {
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
+        //crea il producer
+        DroneServiceNotifier droneServiceNotifier = new DroneServiceClient(vertx, droneServiceUrl);
+
         //crea i use case
         CreateShipmentRequest createShipmentRequest = new CreateShipmentRequestImpl();
         ValidateShipmentRequest validateShipmentRequest = new ValidateShipmentRequestImpl();
-        ShipmentScheduler shipmentScheduler = new ShipmentSchedulerImpl();
-
-        //crea il producer
-        DroneServiceNotifier droneServiceNotifier = new DroneServiceClient(vertx, droneServiceUrl);
+        ShipmentScheduler shipmentScheduler = new ShipmentSchedulerImpl(droneServiceNotifier, vertx);
 
         //crea i controller
         HealthController healthController = new HealthController();
@@ -47,7 +47,7 @@ public class RequestServiceMain {
         ShipmentRequestOrchestrator orchestrator = new ShipmentRequestOrchestratorImpl(createShipmentRequest, validateShipmentRequest, shipmentScheduler, metrics);
 
         //crea il controller
-        ShipmentRequestController shipmentController = new ShipmentRequestController(orchestrator, droneServiceNotifier);
+        ShipmentRequestController shipmentController = new ShipmentRequestController(orchestrator);
 
         //crea il router e registra la rotta
         Router router = Router.router(vertx);

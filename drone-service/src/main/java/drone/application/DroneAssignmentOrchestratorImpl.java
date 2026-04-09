@@ -24,22 +24,19 @@ public class DroneAssignmentOrchestratorImpl implements DroneAssignmentOrchestra
     @Override
     public Future<Void> orchestrateAssignment(String shipmentId, double pickupLat, double pickupLon, double deliveryLat, double deliveryLon, double weight, int timeLimit) {
 
-        double distance = calculateDistanceInKm(pickupLat, pickupLon, deliveryLat, deliveryLon);
+        //step 1: assegna il drone
+        double distance = GeoUtils.haversine(pickupLat, pickupLon, deliveryLat, deliveryLon);
         List<Drone> drones = repository.findAll(); //recupera tutti i droni esistenti
-
         Drone assignedDrone = assignDrone.assign(drones, weight, pickupLat, pickupLon, distance, timeLimit); //assegna il drone
         if (assignedDrone != null) { //se esiste un drone
             metrics.incrementAssignment(true);
             repository.updateAvailability(assignedDrone.getId(), false); //imposta il drone come non più disponibile
+
+            //step 2: pubblica l'evento
             return notifier.notifyDroneAssigned(shipmentId, assignedDrone, pickupLat, pickupLon, deliveryLat, deliveryLon);
         } else { //se non esiste un drone
             metrics.incrementAssignment(false);
             return notifier.notifyDroneNotAvailable(shipmentId).compose(v -> Future.failedFuture("NO_DRONE_AVAILABLE"));
         }
-    }
-
-    //calcola la distanza tra il luogo di pickup e il luogo di destinazione
-    private double calculateDistanceInKm(double lat1, double lon1, double lat2, double lon2) {
-        return GeoUtils.haversine(lat1, lon1, lat2, lon2);
     }
 }

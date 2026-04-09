@@ -4,7 +4,6 @@ import buildingblocks.infrastructure.Adapter;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import request.application.DroneServiceNotifier;
 import request.application.ShipmentRequestOrchestrator;
 
 //controller che riceve le richieste dal client
@@ -12,11 +11,9 @@ import request.application.ShipmentRequestOrchestrator;
 public class ShipmentRequestController {
 
     private final ShipmentRequestOrchestrator orchestrator;
-    private final DroneServiceNotifier droneServiceNotifier;
 
-    public ShipmentRequestController(ShipmentRequestOrchestrator orchestrator, DroneServiceNotifier droneServiceNotifier) {
+    public ShipmentRequestController(ShipmentRequestOrchestrator orchestrator) {
         this.orchestrator = orchestrator;
-        this.droneServiceNotifier = droneServiceNotifier;
     }
 
     //registra la rotta
@@ -31,7 +28,7 @@ public class ShipmentRequestController {
         var delivery = body.getJsonObject("deliveryLocation");
         var pkg = body.getJsonObject("package");
 
-        orchestrator.orchestrateRequest(body.getString("userId"), body.getString("userName"), body.getString("userSurname"), pickup.getDouble("latitude"), pickup.getDouble("longitude"), delivery.getDouble("latitude"), delivery.getDouble("longitude"), body.getString("pickupDate"), body.getString("pickupTime"), body.getInteger("deliveryTimeLimit"), pkg.getDouble("weight"), pkg.getBoolean("fragile"), droneServiceNotifier, ctx.vertx())
+        orchestrator.orchestrateRequest(body.getString("userId"), body.getString("userName"), body.getString("userSurname"), pickup.getDouble("latitude"), pickup.getDouble("longitude"), delivery.getDouble("latitude"), delivery.getDouble("longitude"), body.getString("pickupDate"), body.getString("pickupTime"), body.getInteger("deliveryTimeLimit"), pkg.getDouble("weight"), pkg.getBoolean("fragile"))
                 .onSuccess(shipment -> {
                     ctx.response().setStatusCode(201).putHeader("Content-Type", "application/json").end(shipment.getId());
                 })
