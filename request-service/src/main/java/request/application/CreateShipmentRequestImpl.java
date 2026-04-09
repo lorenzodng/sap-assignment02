@@ -1,7 +1,5 @@
 package request.application;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import request.domain.Package;
 import request.domain.User;
 import request.domain.Position;
@@ -12,8 +10,6 @@ import java.util.UUID;
 
 //contiene oggetti factory dedicati solo alla creazione della richiesta di spedizione
 public class CreateShipmentRequestImpl implements CreateShipmentRequest {
-
-    private static final Logger log = LoggerFactory.getLogger(CreateShipmentRequestImpl.class);
 
     /*
     crea la spedizione
@@ -28,8 +24,6 @@ public class CreateShipmentRequestImpl implements CreateShipmentRequest {
         Package pack = new Package(UUID.randomUUID().toString(), weight, fragile);
 
         Shipment shipment = new Shipment(UUID.randomUUID().toString(), user, pickupLocation, deliveryLocation, LocalDate.parse(pickupDate), LocalTime.parse(pickupTime), deliveryTimeLimit, pack);
-
-        log.info("Shipment {} request created", shipment.getId());
         return shipment;
     }
 }

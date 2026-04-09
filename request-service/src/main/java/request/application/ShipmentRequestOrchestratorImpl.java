@@ -1,11 +1,14 @@
 package request.application;
 
 import io.vertx.core.Future;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import request.domain.Shipment;
 
 //orchestratore che coordina il flusso principale di gestione di una richiesta
 public class ShipmentRequestOrchestratorImpl implements ShipmentRequestOrchestrator {
 
+    private static final Logger log = LoggerFactory.getLogger(CreateShipmentRequestImpl.class);
     private final CreateShipmentRequest creator;
     private final ValidateShipmentRequest validator;
     private final ShipmentScheduler scheduler;
@@ -24,6 +27,7 @@ public class ShipmentRequestOrchestratorImpl implements ShipmentRequestOrchestra
         //step 1: crea la richiesta
         Shipment shipment = creator.create(userId, userName, userSurname, pickupLat, pickupLon, deliveryLat, deliveryLon, pickupDate, pickupTime, deliveryTimeLimit, weight, fragile);
         if (shipment != null && validator.validate(shipment)) {
+            log.info("Shipment {} request created", shipment.getId());
             metrics.incrementValidation(true);
 
             //step 2: verifica il tempo trascorso e notifica drone-service
