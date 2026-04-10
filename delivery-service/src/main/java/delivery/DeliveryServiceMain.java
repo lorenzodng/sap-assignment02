@@ -1,9 +1,6 @@
 package delivery;
 
-import delivery.application.DeliveryMetrics;
-import delivery.application.ShipmentManager;
-import delivery.application.ShipmentManagerImpl;
-import delivery.application.ShipmentRepository;
+import delivery.application.*;
 import delivery.infrastructure.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.vertx.core.Vertx;
@@ -24,19 +21,19 @@ public class DeliveryServiceMain {
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
-        //crea il repository
-        ShipmentRepository repository = new InMemoryShipmentRepository();
+        //crea l'event store
+        ShipmentEventStore eventStore = new InMemoryShipmentEventStore();
 
         DeliveryMetrics metrics = null;
         try {
-            metrics = new DeliveryMetricsController(metricsPort);
+            metrics = new PrometheusDeliveryMetricsProxy(metricsPort);
             log.info("Prometheus metrics available on port {}", metricsPort);
         } catch (Exception e) {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
         }
 
         //crea il manager
-        ShipmentManager shipmentManager = new ShipmentManagerImpl(repository, metrics);
+        ShipmentManager shipmentManager = new ShipmentManagerImpl(eventStore, metrics);
 
         //crea i controller
         ShipmentAssignmentController assignmentController = new ShipmentAssignmentController(shipmentManager);

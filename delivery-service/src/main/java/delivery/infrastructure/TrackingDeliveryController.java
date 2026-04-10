@@ -32,6 +32,7 @@ public class TrackingDeliveryController {
     //recupera lo stato della spedizione
     private void getShipmentStatus(RoutingContext ctx) {
         String id = ctx.pathParam("id"); //estrae l'id dall'url del messaggio http
+        shipmentManager.checkAndCompleteShipment(id); //controlla se la spedizione è stata completata
         Shipment shipment = shipmentManager.getShipmentDetails(id); //recupera la spedizione dalla mappa
         if (shipment != null) { //se la richiesta è stata creata con successo
 
@@ -52,6 +53,7 @@ public class TrackingDeliveryController {
     //recupera la posizione del drone
     private void getDronePosition(RoutingContext ctx) {
         String id = ctx.pathParam("id"); //estrae l'id dall'url del messaggio http
+        shipmentManager.checkAndCompleteShipment(id); //controlla se la spedizione è stata completata
         Shipment shipment = shipmentManager.getShipmentDetails(id); //recupera la spedizione dalla mappa
 
         if (shipment == null) {
@@ -74,6 +76,7 @@ public class TrackingDeliveryController {
     //recupera il tempo rimanente alla consegna
     private void getRemainingTime(RoutingContext ctx) {
         String id = ctx.pathParam("id"); //estrae l'id dall'url del messaggio http
+        shipmentManager.checkAndCompleteShipment(id); //controlla se la spedizione è stata completata
         Shipment shipment = shipmentManager.getShipmentDetails(id); //recupera la spedizione dalla mappa
         if (shipment != null) { //se la spedizione esiste
             double remainingMinutes = shipment.calculateRemainingTime(); //calcola il tempo rimanente

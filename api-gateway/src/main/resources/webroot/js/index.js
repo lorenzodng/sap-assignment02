@@ -59,7 +59,11 @@ async function submitForm() {
         } else if (res.status === 400) {
             el.innerHTML = `<div class="msg msg-error">Dati non validi. Controlla i campi e riprova</div>`;
         } else if (res.status === 503) {
-            el.innerHTML = `<div class="msg msg-error">Nessun drone disponibile per questa spedizione</div>`;
+            if (text === 'Service temporarily unavailable') {
+                el.innerHTML = `<div class="msg msg-error">Servizio temporaneamente non disponibile</div>`;
+            } else {
+                el.innerHTML = `<div class="msg msg-error">Nessun drone disponibile per questa spedizione</div>`;
+            }
         } else {
             el.innerHTML = `<div class="msg msg-error">Errore nell'invio della richiesta (${res.status})</div>`;
         }
@@ -79,7 +83,7 @@ function v(id) {
 const today = new Date();
 document.getElementById('pickupDate').value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
-//costruisce l'orario a partitre da quello inserito
+//costruisce l'orario a partire da quello inserito
 document.getElementById('pickupTime').value = new Date().toLocaleTimeString('it-IT', {
     hour: '2-digit',
     minute: '2-digit'

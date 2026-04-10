@@ -53,6 +53,14 @@ async function update() {
             fetch(BASE + '/shipments/' + shipmentId + '/remaining-time')
         ]);
 
+        if (sRes.status === 503 || pRes.status === 503 || tRes.status === 503) {
+            document.getElementById('updateInfo').innerHTML = '<div class="msg msg-error">Servizio temporaneamente non disponibile</div>';
+            return;
+        } else if (!sRes.ok && sRes.status !== 404) {
+            document.getElementById('updateInfo').innerHTML = `<div class="msg msg-error">Errore nel recupero delle informazioni (${sRes.status})</div>`;
+            return;
+        }
+
         //crea l'etichetta di stato in italiano
         const status = await sRes.json();
         const label = statusLabels[status.status] || status.status;

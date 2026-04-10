@@ -6,7 +6,7 @@ import io.vertx.ext.web.Router;
 import request.application.*;
 import request.infrastructure.DroneServiceClient;
 import request.infrastructure.HealthController;
-import request.infrastructure.RequestMetricsController;
+import request.infrastructure.PrometheusRequestMetricsProxy;
 import request.infrastructure.ShipmentRequestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class RequestServiceMain {
         HealthController healthController = new HealthController();
         RequestMetrics metrics = null;
         try {
-            metrics = new RequestMetricsController(metricsPort);
+            metrics = new PrometheusRequestMetricsProxy(metricsPort);
             log.info("Prometheus metrics available on port {}", metricsPort);
         } catch (Exception e) {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());

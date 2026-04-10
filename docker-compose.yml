@@ -15,6 +15,7 @@ services:
       - request-service
       - drone-service
       - delivery-service
+      - jaeger
 
   request-service:
     build: ./request-service
@@ -56,3 +57,11 @@ services:
       - request-service
       - drone-service
       - delivery-service
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true

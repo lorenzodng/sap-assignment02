@@ -1,10 +1,12 @@
 package drone.infrastructure;
 
+import buildingblocks.infrastructure.Adapter;
 import drone.application.DroneRepository;
 import drone.domain.Drone;
 import java.util.List;
 
 //gestisce lo stato dei droni in memoria
+@Adapter
 public class InMemoryDroneRepository implements DroneRepository {
     private final List<Drone> drones; //lista di tutti i droni esistenti
 

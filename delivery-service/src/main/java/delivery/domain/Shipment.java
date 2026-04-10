@@ -1,6 +1,7 @@
 package delivery.domain;
 
 import buildingblocks.domain.AggregateRoot;
+import java.util.List;
 
 //questo è un esempio della proprietà di modello indipendente del bounded context: Shipment di questo microservizio è diverso da Shipment del gestore richieste
 
@@ -15,7 +16,6 @@ public class Shipment implements AggregateRoot<String> {
     private long assignedAt;
     private double deliverySpeed;
     private ShipmentStatus status;
-    private boolean completionNotified = false; //flag per aggiornare la metrica solo una volta quando la consegna è stata completata
 
     //costruttore principale
     public Shipment(String id, Position droneInitialPosition, Position pickupPosition, Position deliveryPosition, long assignedAt, double deliverySpeed) {
@@ -28,22 +28,11 @@ public class Shipment implements AggregateRoot<String> {
         this.status = ShipmentStatus.SCHEDULED;
     }
 
-    //costruttore per la spedizione cancellata (drone non disponibile)
-    public Shipment(String id) {
-        this.id = id;
-        this.droneInitialPosition = null;
-        this.pickupPosition = null;
-        this.deliveryPosition = null;
-        this.assignedAt = 0;
-        this.deliverySpeed = 0;
-        this.status = ShipmentStatus.CANCELLED;
-    }
-
     //calcola la posizione attuale del drone
     public Position calculateCurrentDronePosition() {
 
         //se il drone non è stato assegnato
-        if (droneInitialPosition == null){
+        if (droneInitialPosition == null) {
             return null;
         }
 
@@ -109,12 +98,26 @@ public class Shipment implements AggregateRoot<String> {
         return status;
     }
 
-    public boolean isJustCompleted() {
-        return getStatus() == ShipmentStatus.COMPLETED && !completionNotified;
-    }
+    //per event sourcing
 
-    public void markCompletionAsNotified() {
-        completionNotified = true;
-    }
+    //ricostruisce lo stato della spedizione
+    public static Shipment reconstitute(List<ShipmentEvent> events) {
+        if (events.isEmpty()) return null;
 
+        Shipment shipment = null;
+        for (ShipmentEvent event : events) {
+            if (event instanceof ShipmentAssigned e) { //se trova un ShipmentAssigned
+                shipment = new Shipment(e.getShipmentId(), e.getDroneInitialPosition(), e.getPickupPosition(), e.getDeliveryPosition(), e.getOccurredAt(), e.getDeliverySpeed()); //crea una spedizione
+            } else if (event instanceof ShipmentCompleted) { //se trova un ShipmentCompleted
+                if (shipment != null) {
+                    shipment.status = ShipmentStatus.COMPLETED; //aggiorna lo stato a COMPLETED
+                }
+            } else if (event instanceof ShipmentCancelled) { //se trova un ShipmentCancelled
+                if (shipment != null) {
+                    shipment.status = ShipmentStatus.CANCELLED; //aggiorna lo stato a CANCELLED
+                }
+            }
+        }
+        return shipment;
+    }
 }

@@ -1,12 +1,10 @@
 package gateway;
 
 import gateway.application.ApiGatewayMetrics;
-import gateway.infrastructure.ApiGatewayMetricsController;
-import gateway.infrastructure.HealthChecker;
+import gateway.infrastructure.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
-import gateway.infrastructure.ApiGatewayController;
 import io.vertx.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +25,22 @@ public class ApiGatewayMain {
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
+        //crea i circuit braker
+        RequestServiceCircuitBreaker requestCircuitBreaker = new RequestServiceCircuitBreaker();
+        DeliveryServiceCircuitBreaker deliveryCircuitBreaker = new DeliveryServiceCircuitBreaker();
+
         //crea i controller
         ApiGatewayMetrics metrics = null;
         try {
-            metrics = new ApiGatewayMetricsController(metricsPort);
+            metrics = new PrometheusApiGatewayMetricsProxy(metricsPort);
             log.info("Prometheus metrics available on port {}", metricsPort);
         } catch (Exception e) {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
         }
-        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics);
+        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics, requestCircuitBreaker, deliveryCircuitBreaker);
 
         //crea l'health checker
-        HealthChecker healthChecker = new HealthChecker(vertx, requestServiceUrl, droneServiceUrl, deliveryServiceUrl);
+        HealthCheckerController healthChecker = new HealthCheckerController(vertx, requestServiceUrl, droneServiceUrl, deliveryServiceUrl);
 
         //crea il router e registra le rotte
         Router router = Router.router(vertx);

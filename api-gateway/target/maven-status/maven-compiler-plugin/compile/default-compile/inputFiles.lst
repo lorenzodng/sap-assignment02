@@ -4,4 +4,6 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gatew
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\application\ApiGatewayMetrics.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\infrastructure\ApiGatewayController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\infrastructure\ApiGatewayMetricsController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\infrastructure\DeliveryServiceCircuitBreaker.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\infrastructure\HealthChecker.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\api-gateway\src\main\java\gateway\infrastructure\RequestServiceCircuitBreaker.java

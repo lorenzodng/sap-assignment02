@@ -44,7 +44,7 @@ public class DroneServiceMain {
         HealthController healthController = new HealthController();
         DroneMetrics metrics = null;
         try {
-            metrics = new DroneMetricsController(metricsPort);
+            metrics = new PrometheusDroneMetricsProxy(metricsPort);
             log.info("Prometheus metrics available on port {}", metricsPort);
         } catch (Exception e) {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());

@@ -1,19 +1,20 @@
 package delivery.application;
 
-import delivery.domain.Position;
-import delivery.domain.Shipment;
+import delivery.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 //punto centrale di gestione di spedizione
 public class ShipmentManagerImpl implements ShipmentManager {
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentManagerImpl.class);
-    private final ShipmentRepository repository;
+    private final ShipmentEventStore eventStore;
     private final DeliveryMetrics metrics; // Nuova dipendenza
 
-    public ShipmentManagerImpl(ShipmentRepository repository, DeliveryMetrics metrics) {
-        this.repository = repository;
+    public ShipmentManagerImpl(ShipmentEventStore eventStore, DeliveryMetrics metrics) {
+        this.eventStore = eventStore;
         this.metrics = metrics;
     }
 
@@ -23,29 +24,39 @@ public class ShipmentManagerImpl implements ShipmentManager {
     */
     @Override
     public void createShipmentFromAssignment(String id, boolean assigned, Double droneLat, Double droneLon, Double pickupLat, Double pickupLon, Double deliveryLat, Double deliveryLon, Long assignedAt, Double speed) {
-        Shipment shipment;
         if (assigned) {
             metrics.incrementActive();
-            shipment = new Shipment(id, new Position(droneLat, droneLon), new Position(pickupLat, pickupLon), new Position(deliveryLat, deliveryLon), assignedAt, speed);
+            ShipmentEvent event = new ShipmentAssigned(id, new Position(droneLat, droneLon), new Position(pickupLat, pickupLon), new Position(deliveryLat, deliveryLon), speed, assignedAt); //crea l'evento di assegnazione drone
+            eventStore.append(event); //lo aggiunge all'event store
             log.info("Shipment {} scheduled", id);
-
         } else {
-            shipment = new Shipment(id);
+            ShipmentEvent event = new ShipmentCancelled(id, System.currentTimeMillis()); //crea l'evento di consegna cancellata
+            eventStore.append(event); //lo aggiunge all'event store
             log.info("Shipment {} cancelled", id);
         }
-        repository.save(shipment);
     }
 
-    //recupera le informazioni di una spedizione
+    //recupera gli eventi e ricostruisce l'aggregato per recuperare le informazioni della spedizione
     @Override
     public Shipment getShipmentDetails(String id) {
-        return repository.findById(id).map(shipment -> {
-            if (shipment.isJustCompleted()) { //se la consegna è completata
-                metrics.incrementCompleted(); //aggiorna la metrica
-                shipment.markCompletionAsNotified(); //aggiorna la flag in modo che la metrica venga incrementata solo una volta (e non ogni volta che si chiama getStatus in Shipment)
-                repository.save(shipment); //aggiorna la spedizione nella mappa
-            }
-            return shipment;
-        }).orElse(null);
+        List<ShipmentEvent> events = eventStore.findByShipmentId(id); //recupera gli eventi della spedizione
+        if (events.isEmpty()) return null;
+        return Shipment.reconstitute(events); //ricostruisce l'aggregato
+    }
+
+    //controlla se la consegna è stata completata
+    @Override
+    public void checkAndCompleteShipment(String id) {
+        List<ShipmentEvent> events = eventStore.findByShipmentId(id);
+        if (events.isEmpty()) return;
+        Shipment shipment = Shipment.reconstitute(events);
+        if (shipment == null) return;
+        boolean alreadyCompleted = events.stream().anyMatch(e -> e instanceof ShipmentCompleted); //controlla se esiste già un evento di consegna completata
+        if (!alreadyCompleted && shipment.getStatus() == ShipmentStatus.COMPLETED) { //se non esiste un evento di consegna completata e lo stato è COMPLETED
+            metrics.incrementCompleted();
+            ShipmentEvent event = new ShipmentCompleted(id, System.currentTimeMillis()); //crea l'evento di consegna completata
+            eventStore.append(event); //lo aggiunge all'event store
+            log.info("Shipment {} completed", id);
+        }
     }
 }
