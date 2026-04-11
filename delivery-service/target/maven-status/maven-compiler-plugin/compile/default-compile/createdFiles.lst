@@ -2,7 +2,7 @@ delivery\application\DeliveryMetrics.class
 delivery\domain\ShipmentStatus.class
 delivery\domain\ShipmentCompleted.class
 buildingblocks\domain\ValueObject.class
-delivery\infrastructure\InMemoryShipmentRepository.class
+delivery\infrastructure\TracingProvider.class
 delivery\infrastructure\ShipmentAssignmentController.class
 delivery\domain\ShipmentAssigned.class
 buildingblocks\domain\AggregateRoot.class
@@ -13,14 +13,14 @@ delivery\domain\ShipmentCancelled.class
 delivery\infrastructure\InMemoryShipmentEventStore.class
 delivery\infrastructure\TrackingDeliveryController.class
 delivery\application\ShipmentManagerImpl.class
-delivery\application\ShipmentRepository.class
 buildingblocks\domain\Entity.class
 delivery\domain\GeoUtils.class
-delivery\infrastructure\DeliveryMetricsController.class
 delivery\domain\Shipment.class
 delivery\application\ShipmentManager.class
+delivery\infrastructure\PrometheusDeliveryMetricsProxy.class
 buildingblocks\application\InboundPort.class
 delivery\DeliveryServiceMain.class
+delivery\infrastructure\TracingController.class
 delivery\domain\ShipmentEvent.class
 buildingblocks\infrastructure\Adapter.class
 delivery\infrastructure\HealthController.class

@@ -20,6 +20,8 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\r
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\domain\User.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\DroneServiceClient.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\HealthController.java
-C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\RequestMetricsController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\PrometheusRequestMetricsProxy.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\ShipmentRequestController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\TracingController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\TracingProvider.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\RequestServiceMain.java

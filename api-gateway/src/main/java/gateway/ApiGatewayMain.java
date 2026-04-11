@@ -19,6 +19,7 @@ public class ApiGatewayMain {
         String requestServiceUrl = System.getenv("REQUEST_SERVICE_URL") != null ? System.getenv("REQUEST_SERVICE_URL") : dotenv.get("REQUEST_SERVICE_URL");
         String droneServiceUrl = System.getenv("DRONE_SERVICE_URL") != null ? System.getenv("DRONE_SERVICE_URL") : dotenv.get("DRONE_SERVICE_URL");
         String deliveryServiceUrl = System.getenv("DELIVERY_SERVICE_URL") != null ? System.getenv("DELIVERY_SERVICE_URL") : dotenv.get("DELIVERY_SERVICE_URL");
+        String jaegerEndpoint = System.getenv("JAEGER_ENDPOINT") != null ? System.getenv("JAEGER_ENDPOINT") : dotenv.get("JAEGER_ENDPOINT");
         int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
         int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
@@ -28,6 +29,10 @@ public class ApiGatewayMain {
         //crea i circuit braker
         RequestServiceCircuitBreaker requestCircuitBreaker = new RequestServiceCircuitBreaker();
         DeliveryServiceCircuitBreaker deliveryCircuitBreaker = new DeliveryServiceCircuitBreaker();
+
+        //crea il tracing
+        TracingProvider tracingProvider = new TracingProvider(jaegerEndpoint, "api-gateway");
+        TracingController tracingController = new TracingController(tracingProvider);
 
         //crea i controller
         ApiGatewayMetrics metrics = null;
@@ -44,6 +49,7 @@ public class ApiGatewayMain {
 
         //crea il router e registra le rotte
         Router router = Router.router(vertx);
+        tracingController.registerRoutes(router);
         apiGatewayController.registerRoutes(router);
         healthChecker.registerRoutes(router);
 

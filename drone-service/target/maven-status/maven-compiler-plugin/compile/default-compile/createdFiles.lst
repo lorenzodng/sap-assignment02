@@ -1,10 +1,11 @@
 drone\domain\Position.class
 drone\infrastructure\DeliveryServiceClient.class
-drone\infrastructure\DroneMetricsController.class
+drone\infrastructure\PrometheusDroneMetricsProxy.class
 buildingblocks\domain\ValueObject.class
 drone\application\AssignDrone.class
 buildingblocks\domain\AggregateRoot.class
 buildingblocks\application\OutboundPort.class
+drone\infrastructure\TracingController.class
 drone\application\DroneAssignmentOrchestratorImpl.class
 drone\application\CheckDroneAvailability.class
 drone\application\CheckDroneAvailabilityImpl.class
@@ -20,5 +21,6 @@ drone\application\DeliveryServiceNotifier.class
 drone\application\DroneMetrics.class
 drone\application\DroneAssignmentOrchestrator.class
 drone\infrastructure\DroneAssignmentController.class
+drone\infrastructure\TracingProvider.class
 drone\domain\Drone.class
 buildingblocks\infrastructure\Adapter.class

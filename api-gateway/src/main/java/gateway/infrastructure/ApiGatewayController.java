@@ -53,7 +53,7 @@ public class ApiGatewayController {
         2) se la chiamata ha successo, recupera il codice di stato e invia al client il body come stringa
         3) se fallisce, invia al client un messaggio di errore
          */
-        client.postAbs(requestServiceUrl + "/shipments").sendBuffer(Buffer.buffer(ctx.body().asString()))
+        client.postAbs(requestServiceUrl + "/shipments").putHeader("traceparent", (String) ctx.get("traceparent")).sendBuffer(Buffer.buffer(ctx.body().asString()))
                 .onSuccess(response -> {
                     metrics.incrementRequest(path, method, response.statusCode());
                     if (response.statusCode() >= 500) {
@@ -82,7 +82,7 @@ public class ApiGatewayController {
             return;
         }
 
-        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/status").send()
+        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/status").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
                     metrics.incrementRequest(path, method, response.statusCode());
                     if (response.statusCode() >= 500) {
@@ -111,7 +111,7 @@ public class ApiGatewayController {
             return;
         }
 
-        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/position").send()
+        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/position").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
                     metrics.incrementRequest(path, method, response.statusCode());
                     if (response.statusCode() >= 500) {
@@ -140,7 +140,7 @@ public class ApiGatewayController {
             return;
         }
 
-        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/remaining-time").send()
+        client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/remaining-time").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
                     metrics.incrementRequest(path, method, response.statusCode());
                     if (response.statusCode() >= 500) {

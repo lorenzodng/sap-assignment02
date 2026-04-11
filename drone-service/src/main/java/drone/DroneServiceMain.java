@@ -18,13 +18,17 @@ public class DroneServiceMain {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure().directory("drone-service").ignoreIfMissing().load();
-
         String deliveryServiceUrl = System.getenv("DELIVERY_SERVICE_URL") != null ? System.getenv("DELIVERY_SERVICE_URL") : dotenv.get("DELIVERY_SERVICE_URL");
+        String jaegerEndpoint = System.getenv("JAEGER_ENDPOINT") != null ? System.getenv("JAEGER_ENDPOINT") : dotenv.get("JAEGER_ENDPOINT");
         int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
         int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
+
+        //crea il tracing
+        TracingProvider tracingProvider = new TracingProvider(jaegerEndpoint, "drone-service");
+        TracingController tracingController = new TracingController(tracingProvider);
 
         //crea la flotta di droni (posizionati a Roma)
         List<Drone> drones = new ArrayList<>();
@@ -58,6 +62,7 @@ public class DroneServiceMain {
 
         //crea il router e registra le rotte
         Router router = Router.router(vertx);
+        tracingController.registerRoutes(router);
         droneController.registerRoutes(router);
         healthController.registerRoutes(router);
 

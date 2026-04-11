@@ -14,12 +14,16 @@ public class DeliveryServiceMain {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure().directory("delivery-service").ignoreIfMissing().load();
-
+        String jaegerEndpoint = System.getenv("JAEGER_ENDPOINT") != null ? System.getenv("JAEGER_ENDPOINT") : dotenv.get("JAEGER_ENDPOINT");
         int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
         int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
         //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
+
+        //crea il tracing
+        TracingProvider tracingProvider = new TracingProvider(jaegerEndpoint, "delivery-service");
+        TracingController tracingController = new TracingController(tracingProvider);
 
         //crea l'event store
         ShipmentEventStore eventStore = new InMemoryShipmentEventStore();
@@ -42,6 +46,7 @@ public class DeliveryServiceMain {
 
         //crea il router e registra le rotte
         Router router = Router.router(vertx);
+        tracingController.registerRoutes(router);
         assignmentController.registerRoutes(router);
         trackingController.registerRoutes(router);
         healthController.registerRoutes(router);

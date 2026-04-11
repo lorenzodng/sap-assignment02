@@ -19,6 +19,8 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\dro
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\DroneServiceMain.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DeliveryServiceClient.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DroneAssignmentController.java
-C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DroneMetricsController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\HealthController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\InMemoryDroneRepository.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\PrometheusDroneMetricsProxy.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\TracingController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\TracingProvider.java

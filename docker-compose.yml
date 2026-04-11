@@ -11,6 +11,7 @@ services:
       - REQUEST_SERVICE_URL=http://request-service:8081
       - DRONE_SERVICE_URL=http://drone-service:8082
       - DELIVERY_SERVICE_URL=http://delivery-service:8083
+      - JAEGER_ENDPOINT=http://jaeger:4317
     depends_on:
       - request-service
       - drone-service
@@ -26,6 +27,7 @@ services:
       - PORT=8081
       - METRICS_PORT=9081
       - DRONE_SERVICE_URL=http://drone-service:8082
+      - JAEGER_ENDPOINT=http://jaeger:4317
 
   drone-service:
     build: ./drone-service
@@ -36,6 +38,7 @@ services:
       - PORT=8082
       - METRICS_PORT=9082
       - DELIVERY_SERVICE_URL=http://delivery-service:8083
+      - JAEGER_ENDPOINT=http://jaeger:4317
 
   delivery-service:
     build: ./delivery-service
@@ -45,6 +48,7 @@ services:
     environment:
       - PORT=8083
       - METRICS_PORT=9083
+      - JAEGER_ENDPOINT=http://jaeger:4317
 
   prometheus:
     image: prom/prometheus:latest

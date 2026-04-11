@@ -8,7 +8,6 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\application\ShipmentEventStore.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\application\ShipmentManager.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\application\ShipmentManagerImpl.java
-C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\application\ShipmentRepository.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\DeliveryServiceMain.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\domain\GeoUtils.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\domain\Position.java
@@ -18,9 +17,10 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\domain\ShipmentCompleted.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\domain\ShipmentEvent.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\domain\ShipmentStatus.java
-C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\DeliveryMetricsController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\HealthController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\InMemoryShipmentEventStore.java
-C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\InMemoryShipmentRepository.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\PrometheusDeliveryMetricsProxy.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\ShipmentAssignmentController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\TracingController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\TracingProvider.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\delivery-service\src\main\java\delivery\infrastructure\TrackingDeliveryController.java
