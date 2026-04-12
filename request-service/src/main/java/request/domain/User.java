@@ -18,12 +18,4 @@ public class User implements Entity<String> {
     public String getId() {
         return id;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
 }

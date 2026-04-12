@@ -23,8 +23,4 @@ public class Package implements Entity<String> {
     public double getWeight() {
         return weight;
     }
-
-    public boolean isFragile() {
-        return fragile;
-    }
 }

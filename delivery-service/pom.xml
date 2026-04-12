@@ -75,6 +75,12 @@
             <artifactId>opentelemetry-semconv</artifactId>
             <version>1.37.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>6.0.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

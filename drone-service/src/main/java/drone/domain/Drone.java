@@ -38,14 +38,6 @@ public class Drone implements Entity<String> {
         return available;
     }
 
-    public void updatePosition(Position newPosition) {
-        this.position = newPosition;
-    }
-
-    public void updateBattery(double consumedBattery) {
-        this.batteryCapacity -= consumedBattery;
-    }
-
     public void setAvailable(boolean available) {
         this.available = available;
     }

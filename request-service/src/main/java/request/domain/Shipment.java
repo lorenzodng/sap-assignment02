@@ -31,10 +31,6 @@ public class Shipment implements AggregateRoot<String> {
         return id;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public Position getPickupLocation() {
         return pickupLocation;
     }

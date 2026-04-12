@@ -38,8 +38,9 @@ public class TrackingDeliveryController {
 
             //costruisce il messaggio json
             JSONObject response = new JSONObject();
-            ShipmentStatus status = shipment.getStatus();
+            ShipmentStatus status = shipment.updateStatus();
             log.info("Shipment {} status: {}", id, status.name());
+            response.put("id", id);
             response.put("status", status.name());
             if (status == ShipmentStatus.CANCELLED) { //se lo stato della richiesta è CANCELLED
                 response.put("message", "No drone available for this shipment");
@@ -65,6 +66,7 @@ public class TrackingDeliveryController {
             log.info("Delivery {} drone position: {}, {}", id, currentPosition.getLatitude(), currentPosition.getLongitude());
 
             JSONObject position = new JSONObject();
+            position.put("id", id);
             position.put("latitude", currentPosition.getLatitude());
             position.put("longitude", currentPosition.getLongitude());
             ctx.response().setStatusCode(200).putHeader("Content-Type", "application/json").end(position.toString());
@@ -84,6 +86,7 @@ public class TrackingDeliveryController {
 
             //costruisce il messaggio json
             JSONObject response = new JSONObject();
+            response.put("id", id);
             response.put("remainingMinutes", remainingMinutes);
             ctx.response().setStatusCode(200).putHeader("Content-Type", "application/json").end(response.toString()); //costruisce il messaggio di risposta e lo invia all'api-gateway
         } else {

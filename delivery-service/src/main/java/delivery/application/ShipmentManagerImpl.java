@@ -52,7 +52,7 @@ public class ShipmentManagerImpl implements ShipmentManager {
         Shipment shipment = Shipment.reconstitute(events);
         if (shipment == null) return;
         boolean alreadyCompleted = events.stream().anyMatch(e -> e instanceof ShipmentCompleted); //controlla se esiste già un evento di consegna completata
-        if (!alreadyCompleted && shipment.getStatus() == ShipmentStatus.COMPLETED) { //se non esiste un evento di consegna completata e lo stato è COMPLETED
+        if (!alreadyCompleted && shipment.updateStatus() == ShipmentStatus.COMPLETED) { //se non esiste un evento di consegna completata e lo stato è COMPLETED
             metrics.incrementCompleted();
             ShipmentEvent event = new ShipmentCompleted(id, System.currentTimeMillis()); //crea l'evento di consegna completata
             eventStore.append(event); //lo aggiunge all'event store

@@ -113,5 +113,5 @@ function stopTracking() {
 //avvia l'aggiornamento
 if (shipmentId) {
     update();
-    trackInterval = setInterval(update, 2000);
+    trackInterval = setInterval(update, 2000); //aggiorna ogni 2 secondi
 }

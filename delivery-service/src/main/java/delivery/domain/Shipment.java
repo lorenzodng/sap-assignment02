@@ -82,8 +82,12 @@ public class Shipment implements AggregateRoot<String> {
         return id;
     }
 
-    //restituisce lo stato in base alla posizione del drone
     public ShipmentStatus getStatus() {
+        return status;
+    }
+
+    //restituisce lo stato in base alla posizione del drone
+    public ShipmentStatus updateStatus() {
         if (droneInitialPosition != null) {
             double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS; //calcola le ore trascorse dall'assegnazione del drone alla spedizione
             double distanceCovered = deliverySpeed * elapsedHours; //calcola la distanza totale percorsa dal drone
