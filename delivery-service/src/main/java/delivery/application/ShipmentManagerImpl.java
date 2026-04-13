@@ -3,7 +3,6 @@ package delivery.application;
 import delivery.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 //punto centrale di gestione di spedizione
@@ -40,7 +39,9 @@ public class ShipmentManagerImpl implements ShipmentManager {
     @Override
     public Shipment getShipmentDetails(String id) {
         List<ShipmentEvent> events = eventStore.findByShipmentId(id); //recupera gli eventi della spedizione
-        if (events.isEmpty()) return null;
+        if (events.isEmpty()) {
+            throw new ShipmentNotFoundException();
+        }
         return Shipment.reconstitute(events); //ricostruisce l'aggregato
     }
 
@@ -48,9 +49,10 @@ public class ShipmentManagerImpl implements ShipmentManager {
     @Override
     public void checkAndCompleteShipment(String id) {
         List<ShipmentEvent> events = eventStore.findByShipmentId(id);
-        if (events.isEmpty()) return;
+        if (events.isEmpty()) {
+            throw new ShipmentNotFoundException();
+        }
         Shipment shipment = Shipment.reconstitute(events);
-        if (shipment == null) return;
         boolean alreadyCompleted = events.stream().anyMatch(e -> e instanceof ShipmentCompleted); //controlla se esiste già un evento di consegna completata
         if (!alreadyCompleted && shipment.updateStatus() == ShipmentStatus.COMPLETED) { //se non esiste un evento di consegna completata e lo stato è COMPLETED
             metrics.incrementCompleted();

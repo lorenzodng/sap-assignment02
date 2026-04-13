@@ -13,10 +13,14 @@ services:
       - DELIVERY_SERVICE_URL=http://delivery-service:8083
       - JAEGER_ENDPOINT=http://jaeger:4317
     depends_on:
-      - request-service
-      - drone-service
-      - delivery-service
-      - jaeger
+      request-service:
+        condition: service_healthy
+      drone-service:
+        condition: service_healthy
+      delivery-service:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
 
   request-service:
     build: ./request-service
@@ -28,6 +32,12 @@ services:
       - METRICS_PORT=9081
       - DRONE_SERVICE_URL=http://drone-service:8082
       - JAEGER_ENDPOINT=http://jaeger:4317
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   drone-service:
     build: ./drone-service
@@ -39,6 +49,12 @@ services:
       - METRICS_PORT=9082
       - DELIVERY_SERVICE_URL=http://delivery-service:8083
       - JAEGER_ENDPOINT=http://jaeger:4317
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   delivery-service:
     build: ./delivery-service
@@ -49,6 +65,20 @@ services:
       - PORT=8083
       - METRICS_PORT=9083
       - JAEGER_ENDPOINT=http://jaeger:4317
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  autoheal:
+    image: willfarrell/autoheal
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
 
   prometheus:
     image: prom/prometheus:latest

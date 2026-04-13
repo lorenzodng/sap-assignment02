@@ -41,6 +41,13 @@ public class DroneServiceClient implements DroneServiceNotifier {
         body.put("deliveryTimeLimit", shipment.getDeliveryTimeLimit());
 
         return client.postAbs(droneServiceUrl + "/shipments/assign").putHeader("Content-Type", "application/json").sendBuffer(Buffer.buffer(body.toString()))
+                .compose(response -> { //gestisce casi errore/indisponibilita di drone-service
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                        return Future.succeededFuture();
+                    } else {
+                        return Future.failedFuture(new DroneServiceException("Drone service error: " + response.statusCode()));
+                    }
+                })
                 .onSuccess(res -> log.info("Shipment {} request notified", shipment.getId()))
                 .onFailure(err -> log.error("Failed to notify drone service for shipment {}", shipment.getId(), err))
                 .mapEmpty(); //trasforma il risultato in Future<Void>

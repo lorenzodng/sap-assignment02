@@ -106,8 +106,9 @@ public class Shipment implements AggregateRoot<String> {
 
     //ricostruisce lo stato della spedizione
     public static Shipment reconstitute(List<ShipmentEvent> events) {
-        if (events.isEmpty()) return null;
-
+        if (events == null || events.isEmpty()) {
+            throw new IllegalArgumentException("Cannot reconstitute shipment: no events provided");
+        }
         Shipment shipment = null;
         for (ShipmentEvent event : events) {
             if (event instanceof ShipmentAssigned e) { //se trova un ShipmentAssigned
@@ -122,6 +123,11 @@ public class Shipment implements AggregateRoot<String> {
                 }
             }
         }
+
+        if (shipment == null) {
+            throw new IllegalStateException("Reconstitution failed: ShipmentAssigned event missing");
+        }
+
         return shipment;
     }
 }

@@ -46,6 +46,13 @@ public class DeliveryServiceClient implements DeliveryServiceNotifier {
         body.put("assignedAt", System.currentTimeMillis());
 
         return client.putAbs(deliveryServiceUrl + "/shipments/" + shipmentId + "/assignment").putHeader("Content-Type", "application/json").sendBuffer(Buffer.buffer(body.toString())) //invia il messaggio http trattando il body con un buffer (richiesto da vertx per recuperare i messaggi)
+                .compose(response -> { //gestisce casi errore/indisponibilita di delivery-service
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                        return Future.succeededFuture();
+                    } else {
+                        return Future.failedFuture(new DeliveryServiceException("Delivery service error: " + response.statusCode()));
+                    }
+                })
                 .onSuccess(res -> { //in caso di successo
                     log.info("Drone {} assigned to shipment {}", drone.getId(), shipmentId);
                     log.info("Shipment {} drone assigned notified", shipmentId);
@@ -66,6 +73,13 @@ public class DeliveryServiceClient implements DeliveryServiceNotifier {
         body.put("assigned", false);
 
         return client.putAbs(deliveryServiceUrl + "/shipments/" + shipmentId + "/assignment").sendBuffer(Buffer.buffer(body.toString())) //invia il messaggio http trattando il body con un buffer (richiesto da vertx per recuperare i messaggi
+                .compose(response -> {
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) { //gestisce casi errore/indisponibilita di delivery-service
+                        return Future.succeededFuture();
+                    } else {
+                        return Future.failedFuture(new DeliveryServiceException("Delivery service error: " + response.statusCode()));
+                    }
+                })
                 .onSuccess(res -> { //in caso di successo
                     log.warn("No available drones for shipment {}", shipmentId);
                     log.warn("Shipment {} drone not available notified", shipmentId);

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-//contiene oggetti factory dedicati solo alla creazione della richiesta di spedizione
 public class CreateShipmentRequestImpl implements CreateShipmentRequest {
 
     /*
@@ -18,12 +17,16 @@ public class CreateShipmentRequestImpl implements CreateShipmentRequest {
     @Override
     public Shipment create(String userId, String userName, String userSurname, Double pickupLat, Double pickupLon, Double deliveryLat, Double deliveryLon, String pickupDate, String pickupTime, Integer deliveryTimeLimit, Double weight, Boolean fragile) {
 
-        User user = new User(userId, userName, userSurname);
-        Position pickupLocation = new Position(pickupLat, pickupLon);
-        Position deliveryLocation = new Position(deliveryLat, deliveryLon);
-        Package pack = new Package(UUID.randomUUID().toString(), weight, fragile);
+        try {
+            User user = new User(userId, userName, userSurname);
+            Position pickupLocation = new Position(pickupLat, pickupLon);
+            Position deliveryLocation = new Position(deliveryLat, deliveryLon);
+            Package pack = new Package(UUID.randomUUID().toString(), weight, fragile);
 
-        Shipment shipment = new Shipment(UUID.randomUUID().toString(), user, pickupLocation, deliveryLocation, LocalDate.parse(pickupDate), LocalTime.parse(pickupTime), deliveryTimeLimit, pack);
-        return shipment;
+            return new Shipment(UUID.randomUUID().toString(), user, pickupLocation, deliveryLocation, LocalDate.parse(pickupDate), LocalTime.parse(pickupTime), deliveryTimeLimit, pack);
+
+        } catch (Exception ex) {
+            throw new InvalidShipmentDataException("Invalid or poorly formatted shipment data", ex);
+        }
     }
 }

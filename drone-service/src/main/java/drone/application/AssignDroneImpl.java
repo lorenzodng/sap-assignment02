@@ -30,6 +30,6 @@ public class AssignDroneImpl implements AssignDrone {
             double dist1 = GeoUtils.haversine(d1.getPosition().getLatitude(), d1.getPosition().getLongitude(), pickupLatitude, pickupLongitude);
             double dist2 = GeoUtils.haversine(d2.getPosition().getLatitude(), d2.getPosition().getLongitude(), pickupLatitude, pickupLongitude);
             return Double.compare(dist1, dist2);
-        }).orElse(null);
+        }).orElseThrow(DroneNotAvailableException::new);
     }
 }

@@ -4,7 +4,9 @@ import buildingblocks.infrastructure.Adapter;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import request.application.InvalidShipmentDataException;
 import request.application.ShipmentRequestOrchestrator;
+import request.application.ShipmentValidationException;
 
 //controller che riceve le richieste dal client
 @Adapter
@@ -33,7 +35,7 @@ public class ShipmentRequestController {
                     ctx.response().setStatusCode(201).putHeader("Content-Type", "application/json").end(shipment.getId());
                 })
                 .onFailure(err -> {
-                    if ("VALIDATION_FAILED".equals(err.getMessage())) {
+                    if (err instanceof ShipmentValidationException || err instanceof InvalidShipmentDataException) {
                         ctx.response().setStatusCode(400).end("Invalid request");
                     } else {
                         ctx.response().setStatusCode(500).end("Internal Server Error");

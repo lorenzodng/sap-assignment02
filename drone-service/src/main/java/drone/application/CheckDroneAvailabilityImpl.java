@@ -2,9 +2,7 @@ package drone.application;
 
 import drone.domain.Drone;
 
-
 public class CheckDroneAvailabilityImpl implements CheckDroneAvailability {
-
 
     @Override
     public boolean check(Drone drone, double packageWeight, double distanceDroneToPickup, double distancePickupToDelivery, int deliveryTimeLimit) {
