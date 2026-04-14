@@ -16,7 +16,7 @@ public class PrometheusApiGatewayMetricsProxy implements ApiGatewayMetrics {
     public PrometheusApiGatewayMetricsProxy(int port) throws Exception {
         JvmMetrics.builder().register(); //metriche dello stato della jvm
         totalRequests = Counter.builder().name("gateway_shipments_requests_total").help("Total number of REST requests received").labelNames("endpoint", "method", "status").register(); //metriche del numero di richieste di creazione spedizione e numero di richieste di tacking spedizione
-        server = HTTPServer.builder().port(port).buildAndStart();  //espone le metriche su una porta dedicata
+        server = HTTPServer.builder().port(port).buildAndStart(); //espone le metriche su una porta dedicata
     }
 
     //incrementa la metrica
