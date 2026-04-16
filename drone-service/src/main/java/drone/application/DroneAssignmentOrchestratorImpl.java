@@ -11,7 +11,7 @@ public class DroneAssignmentOrchestratorImpl implements DroneAssignmentOrchestra
     private final AssignDrone assignDrone;
     private final DeliveryServiceNotifier notifier;
     private final DroneRepository repository;
-    private final DroneMetrics metrics; // La dipendenza
+    private final DroneMetrics metrics;
 
     public DroneAssignmentOrchestratorImpl(AssignDrone assignDrone, DeliveryServiceNotifier notifier, DroneRepository repository, DroneMetrics metrics) {
         this.assignDrone = assignDrone;

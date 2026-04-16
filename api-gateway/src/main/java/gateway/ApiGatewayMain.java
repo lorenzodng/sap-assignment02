@@ -15,7 +15,6 @@ public class ApiGatewayMain {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure().directory("api-gateway").ignoreIfMissing().load();
-
         String requestServiceUrl = System.getenv("REQUEST_SERVICE_URL") != null ? System.getenv("REQUEST_SERVICE_URL") : dotenv.get("REQUEST_SERVICE_URL");
         String droneServiceUrl = System.getenv("DRONE_SERVICE_URL") != null ? System.getenv("DRONE_SERVICE_URL") : dotenv.get("DRONE_SERVICE_URL");
         String deliveryServiceUrl = System.getenv("DELIVERY_SERVICE_URL") != null ? System.getenv("DELIVERY_SERVICE_URL") : dotenv.get("DELIVERY_SERVICE_URL");

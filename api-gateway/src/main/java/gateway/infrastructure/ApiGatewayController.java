@@ -38,12 +38,10 @@ public class ApiGatewayController {
 
     //inoltra la richiesta di creazione spedizione a request-management
     private void createShipment(RoutingContext ctx) {
-        String path = "/shipments";
-        String method = "POST";
 
         //verifica se il circuito è ancora nello stato open
         if (!requestCircuitBreaker.get().tryAcquirePermission()) {
-            metrics.incrementRequest(path, method, 503);
+            metrics.incrementRequest("/shipments", "POST", 503);
             ctx.response().setStatusCode(503).end("Service temporarily unavailable");
             return;
         }
@@ -55,7 +53,7 @@ public class ApiGatewayController {
          */
         client.postAbs(requestServiceUrl + "/shipments").putHeader("traceparent", (String) ctx.get("traceparent")).sendBuffer(Buffer.buffer(ctx.body().asString()))
                 .onSuccess(response -> {
-                    metrics.incrementRequest(path, method, response.statusCode());
+                    metrics.incrementRequest("/shipments", "POST", response.statusCode());
                     if (response.statusCode() >= 500) {
                         requestCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, new RuntimeException("Server error"));
                     } else {
@@ -63,7 +61,7 @@ public class ApiGatewayController {
                     }
                     ctx.response().setStatusCode(response.statusCode()).end(response.bodyAsString());
                 }).onFailure(err -> {
-                    metrics.incrementRequest(path, method, 500);
+                    metrics.incrementRequest("/shipments", "POST", 500);
                     requestCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, err); //incrementa il contatore di fallimenti per calcolare il tasso di fallimento
                     ctx.response().setStatusCode(500).end("Error forwarding request");
                 });
@@ -71,20 +69,18 @@ public class ApiGatewayController {
 
     //inoltra la richiesta di tracking a delivery-management
     private void getShipmentStatus(RoutingContext ctx) {
-        String path = "/shipments/:id/status";
-        String method = "GET";
         String id = ctx.pathParam("id");
 
         //verifica se il circuito è ancora nello stato open
         if (!deliveryCircuitBreaker.get().tryAcquirePermission()) {
-            metrics.incrementRequest(path, method, 503);
+            metrics.incrementRequest("/shipments/:id/status", "GET", 503);
             ctx.response().setStatusCode(503).end("Service temporarily unavailable");
             return;
         }
 
         client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/status").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
-                    metrics.incrementRequest(path, method, response.statusCode());
+                    metrics.incrementRequest("/shipments/:id/status", "GET", response.statusCode());
                     if (response.statusCode() >= 500) {
                         deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, new RuntimeException("Server error"));
                     } else {
@@ -92,7 +88,7 @@ public class ApiGatewayController {
                     }
                     ctx.response().setStatusCode(response.statusCode()).putHeader("Content-Type", "application/json").end(response.bodyAsString());
                 }).onFailure(err -> {
-                    metrics.incrementRequest(path, method, 500);
+                    metrics.incrementRequest("/shipments/:id/status", "GET", 500);
                     deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, err); //incrementa il contatore di fallimenti per calcolare il tasso di fallimento
                     ctx.response().setStatusCode(500).end("Error forwarding request");
                 });
@@ -100,20 +96,18 @@ public class ApiGatewayController {
 
     //inoltra la richiesta di posizione a delivery-management
     private void getDronePosition(RoutingContext ctx) {
-        String path = "/shipments/:id/position"; // Definisci il path template
-        String method = "GET";
         String id = ctx.pathParam("id");
 
         //verifica se il circuito è ancora nello stato open
         if (!deliveryCircuitBreaker.get().tryAcquirePermission()) {
-            metrics.incrementRequest(path, method, 503);
+            metrics.incrementRequest("/shipments/:id/position", "GET", 503);
             ctx.response().setStatusCode(503).end("Service temporarily unavailable");
             return;
         }
 
         client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/position").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
-                    metrics.incrementRequest(path, method, response.statusCode());
+                    metrics.incrementRequest("/shipments/:id/position", "GET", response.statusCode());
                     if (response.statusCode() >= 500) {
                         deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, new RuntimeException("Server error"));
                     } else {
@@ -121,7 +115,7 @@ public class ApiGatewayController {
                     }
                     ctx.response().setStatusCode(response.statusCode()).putHeader("Content-Type", "application/json").end(response.bodyAsString());
                 }).onFailure(err -> {
-                    metrics.incrementRequest(path, method, 500);
+                    metrics.incrementRequest("/shipments/:id/position", "GET", 500);
                     deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, err); //incrementa il contatore di fallimenti per calcolare il tasso di fallimento
                     ctx.response().setStatusCode(500).end("Error forwarding request");
                 });
@@ -129,20 +123,18 @@ public class ApiGatewayController {
 
     //inoltra la richiesta di tempo rimanente a delivery-management
     private void getRemainingTime(RoutingContext ctx) {
-        String path = "/shipments/:id/remaining-time"; // Definisci il path template
-        String method = "GET";
         String id = ctx.pathParam("id");
 
         //verifica se il circuito è ancora nello stato open
         if (!deliveryCircuitBreaker.get().tryAcquirePermission()) {
-            metrics.incrementRequest(path, method, 503);
+            metrics.incrementRequest("/shipments/:id/remaining-time", "GET", 503);
             ctx.response().setStatusCode(503).end("Service temporarily unavailable");
             return;
         }
 
         client.getAbs(deliveryServiceUrl + "/shipments/" + id + "/remaining-time").putHeader("traceparent", (String) ctx.get("traceparent")).send()
                 .onSuccess(response -> {
-                    metrics.incrementRequest(path, method, response.statusCode());
+                    metrics.incrementRequest("/shipments/:id/remaining-time", "GET", response.statusCode());
                     if (response.statusCode() >= 500) {
                         deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, new RuntimeException("Server error"));
                     } else {
@@ -150,7 +142,7 @@ public class ApiGatewayController {
                     }
                     ctx.response().setStatusCode(response.statusCode()).putHeader("Content-Type", "application/json").end(response.bodyAsString());
                 }).onFailure(err -> {
-                    metrics.incrementRequest(path, method, 500);
+                    metrics.incrementRequest("/shipments/:id/remaining-time", "GET", 500);
                     deliveryCircuitBreaker.get().onError(0, java.util.concurrent.TimeUnit.NANOSECONDS, err); //incrementa il contatore di fallimenti per calcolare il tasso di fallimento
                     ctx.response().setStatusCode(500).end("Error forwarding request");
                 });

@@ -8,7 +8,7 @@ import request.domain.Shipment;
 //orchestratore che coordina il flusso principale di gestione di una richiesta
 public class ShipmentRequestOrchestratorImpl implements ShipmentRequestOrchestrator {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateShipmentRequestImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ShipmentRequestOrchestratorImpl.class);
     private final CreateShipmentRequest creator;
     private final ValidateShipmentRequest validator;
     private final ShipmentScheduler scheduler;
