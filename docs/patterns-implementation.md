@@ -32,8 +32,6 @@ If a service fails three consecutive checks, Docker marks the container as `unhe
 The `autoheal` container monitors all running containers and automatically restarts any that enter the `unhealthy` state.  
 Additionally, `restart: on-failure` handles the case where a container crashes entirely.
 
-This closes the full loop of the pattern: each service exposes its health, the deployment infrastructure periodically checks it, and takes corrective action when needed.
-
 ---
 
 ## Application Metrics
@@ -54,7 +52,8 @@ Prometheus scrapes these endpoints periodically as configured in `prometheus.yml
 
 ## Event Sourcing
 
-Event Sourcing was introduced in `delivery-service` for tracking the full history of a shipment, which is essential for correctness and auditability.
+Event Sourcing was introduced in `delivery-service` for tracking the full history of a shipment. 
+This service was chosen because it is the only service whose state evolves through meaningful transitions over time, making the full event history essential for reconstructing the current state.
 
 This is the exclusive persistence mechanism for shipment state: rather than storing the current state directly, the system appends domain events and reconstructs the state by replaying them.
 

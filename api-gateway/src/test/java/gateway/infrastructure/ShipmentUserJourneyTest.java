@@ -68,7 +68,7 @@ class ShipmentUserJourneyTest {
                 .onFailure(ctx::failNow);
     }
 
-    //invia la richiesta di spedizione
+    //crea il messaggio json
     private JsonObject createShipmentPayload() {
         String userId = "mario-rossi-01";
         String name = "Mario";

@@ -36,10 +36,10 @@ public class TrackingDeliveryController {
             String id = ctx.pathParam("id"); //estrae l'id dall'url del messaggio http
             shipmentManager.checkAndCompleteShipment(id); //controlla se la spedizione è stata completata
             Shipment shipment = shipmentManager.getShipmentDetails(id); //recupera la spedizione dalla mappa
+            ShipmentStatus status = shipment.updateStatus();
 
             //costruisce il messaggio json
             JSONObject response = new JSONObject();
-            ShipmentStatus status = shipment.updateStatus();
             log.info("Shipment {} status: {}", id, status.name());
             response.put("id", id);
             response.put("status", status.name());
@@ -63,11 +63,11 @@ public class TrackingDeliveryController {
             Position currentPosition = shipment.calculateCurrentDronePosition();
             if (currentPosition != null) { //se il drone è stato assegnato
                 log.info("Delivery {} drone position: {}, {}", id, currentPosition.getLatitude(), currentPosition.getLongitude());
-                JSONObject position = new JSONObject();
-                position.put("id", id);
-                position.put("latitude", currentPosition.getLatitude());
-                position.put("longitude", currentPosition.getLongitude());
-                ctx.response().setStatusCode(200).putHeader("Content-Type", "application/json").end(position.toString());
+                JSONObject response = new JSONObject();
+                response.put("id", id);
+                response.put("latitude", currentPosition.getLatitude());
+                response.put("longitude", currentPosition.getLongitude());
+                ctx.response().setStatusCode(200).putHeader("Content-Type", "application/json").end(response.toString());
             } else {
                 ctx.response().setStatusCode(400).end("Position not available: Shipment cancelled or not started");
             }

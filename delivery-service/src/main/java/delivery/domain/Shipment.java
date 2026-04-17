@@ -92,7 +92,8 @@ public class Shipment implements AggregateRoot<String> {
             double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS; //calcola le ore trascorse dall'assegnazione del drone alla spedizione
             double distanceCovered = deliverySpeed * elapsedHours; //calcola la distanza totale percorsa dal drone
             double distanceToPickup = GeoUtils.haversine(droneInitialPosition.getLatitude(), droneInitialPosition.getLongitude(), pickupPosition.getLatitude(), pickupPosition.getLongitude()); //calcola la distanza dalla posizione iniziale del drone al luogo di ritiro
-            double totalDistance = distanceToPickup + GeoUtils.haversine(pickupPosition.getLatitude(), pickupPosition.getLongitude(), deliveryPosition.getLatitude(), deliveryPosition.getLongitude()); //calcola la distanza totale che il drone deve percorrere
+            double distanceToDelivery = GeoUtils.haversine(pickupPosition.getLatitude(), pickupPosition.getLongitude(), deliveryPosition.getLatitude(), deliveryPosition.getLongitude());
+            double totalDistance = distanceToPickup + distanceToDelivery; //calcola la distanza totale che il drone deve percorrere
             if (distanceCovered >= totalDistance) { //se il drone ha raggiunto la destinazione
                 this.status = ShipmentStatus.COMPLETED;
             } else if (distanceCovered >= distanceToPickup) { //se il drone ha raggiunto il logo di ritiro
