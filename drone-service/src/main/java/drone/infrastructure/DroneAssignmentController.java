@@ -28,6 +28,7 @@ public class DroneAssignmentController {
         JSONObject body = new JSONObject(ctx.body().asString()); //recupera il body dal messaggio
         String shipmentId = body.getString("shipmentId");
 
+        String traceparent = ctx.request().getHeader("traceparent");
         orchestrator.orchestrateAssignment(shipmentId, body.getDouble("pickupLatitude"), body.getDouble("pickupLongitude"), body.getDouble("deliveryLatitude"), body.getDouble("deliveryLongitude"), body.getDouble("packageWeight"), body.getInt("deliveryTimeLimit"))
                 .onSuccess(v -> ctx.response().setStatusCode(201).end())
                 .onFailure(err -> {

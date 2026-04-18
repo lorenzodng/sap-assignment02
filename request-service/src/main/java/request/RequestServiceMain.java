@@ -27,7 +27,7 @@ public class RequestServiceMain {
         TracingController tracingController = new TracingController(tracingProvider);
 
         //crea il producer
-        DroneServiceNotifier droneServiceNotifier = new DroneServiceClient(vertx, droneServiceUrl);
+        DroneServiceNotifier droneServiceNotifier = new DroneServiceClient(vertx, droneServiceUrl, tracingProvider.getOpenTelemetry());
 
         //crea i use case
         CreateShipmentRequest createShipmentRequest = new CreateShipmentRequestImpl();

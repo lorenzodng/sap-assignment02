@@ -12,10 +12,10 @@ public class ValidateShipmentRequestImpl implements ValidateShipmentRequest {
 
         LocalDateTime pickupDateTime = LocalDateTime.of(shipment.getPickupDate(), shipment.getPickupTime());
 
-        // verifica che la data e l'ora di ritiro siano nel futuro
+       /* // verifica che la data e l'ora di ritiro siano nel futuro
         if (pickupDateTime.isBefore(LocalDateTime.now())) {
             throw new ShipmentValidationException("Pickup date and time must be in the future");
-        }
+        }*/
 
         // verifica che il peso del pacco sia maggiore di zero
         if (shipment.getPackage().getWeight() <= 0) {

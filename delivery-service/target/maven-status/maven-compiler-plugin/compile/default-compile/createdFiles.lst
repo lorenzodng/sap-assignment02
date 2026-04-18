@@ -4,9 +4,11 @@ delivery\domain\ShipmentCompleted.class
 buildingblocks\domain\ValueObject.class
 delivery\infrastructure\TracingProvider.class
 delivery\infrastructure\ShipmentAssignmentController.class
+delivery\infrastructure\TracingController$1.class
 delivery\domain\ShipmentAssigned.class
 buildingblocks\domain\AggregateRoot.class
 delivery\domain\Position.class
+delivery\application\ShipmentNotFoundException.class
 buildingblocks\application\OutboundPort.class
 delivery\application\ShipmentEventStore.class
 delivery\domain\ShipmentCancelled.class

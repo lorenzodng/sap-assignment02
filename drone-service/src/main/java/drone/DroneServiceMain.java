@@ -42,8 +42,7 @@ public class DroneServiceMain {
 
         //crea il livello infrastruttura
         DroneRepository droneRepository = new InMemoryDroneRepository(drones);
-        DeliveryServiceNotifier deliveryNotifier = new DeliveryServiceClient(vertx, deliveryServiceUrl);
-
+        DeliveryServiceNotifier deliveryNotifier = new DeliveryServiceClient(vertx, deliveryServiceUrl, tracingProvider.getOpenTelemetry());
         //crea i controller
         HealthController healthController = new HealthController();
         DroneMetrics metrics = null;

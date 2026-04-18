@@ -7,11 +7,13 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\b
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\CreateShipmentRequest.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\CreateShipmentRequestImpl.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\DroneServiceNotifier.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\InvalidShipmentDataException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\RequestMetrics.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ShipmentRequestOrchestrator.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ShipmentRequestOrchestratorImpl.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ShipmentScheduler.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ShipmentSchedulerImpl.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ShipmentValidationException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ValidateShipmentRequest.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\application\ValidateShipmentRequestImpl.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\domain\Package.java
@@ -19,6 +21,7 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\r
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\domain\Shipment.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\domain\User.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\DroneServiceClient.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\DroneServiceException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\HealthController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\PrometheusRequestMetricsProxy.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\request-service\src\main\java\request\infrastructure\ShipmentRequestController.java

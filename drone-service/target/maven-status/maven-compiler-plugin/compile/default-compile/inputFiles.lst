@@ -12,13 +12,16 @@ C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\dro
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\application\DroneAssignmentOrchestrator.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\application\DroneAssignmentOrchestratorImpl.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\application\DroneMetrics.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\application\DroneNotAvailableException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\application\DroneRepository.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\domain\Drone.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\domain\GeoUtils.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\domain\Position.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\DroneServiceMain.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DeliveryServiceClient.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DeliveryServiceException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DroneAssignmentController.java
+C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\DroneNotFoundException.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\HealthController.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\InMemoryDroneRepository.java
 C:\Users\matti\IdeaProjects\sap\sap-assignment02\drone-service\src\main\java\drone\infrastructure\PrometheusDroneMetricsProxy.java

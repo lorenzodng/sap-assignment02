@@ -11,22 +11,22 @@ import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 @Adapter
 public class PrometheusDeliveryMetricsProxy implements DeliveryMetrics {
 
-    private final Counter completedDeliveries;
     private final Gauge activeDeliveries;
+    private final Counter completedDeliveries;
     private final HTTPServer server;
 
     public PrometheusDeliveryMetricsProxy(int port) throws Exception {
         JvmMetrics.builder().register(); //metriche dello stato della jvm
-        completedDeliveries = Counter.builder().name("delivery_completed_total").help("Total number of completed deliveries").register(); //metrica consegna completata
         activeDeliveries = Gauge.builder().name("delivery_deliveries_active").help("Number of shipments currently in progress").register(); //metrica consegna in corso
-        server = HTTPServer.builder().port(port).buildAndStart();  //espone le metriche su una porta dedicata
+        completedDeliveries = Counter.builder().name("delivery_completed_total").help("Total number of completed deliveries").register(); //metrica consegna completata
+        server = HTTPServer.builder().port(port).buildAndStart(); //espone le metriche su una porta dedicata
     }
 
     //incrementa e decrementa le metriche quando una consegna è stata completata
     @Override
     public void incrementCompleted() {
-        completedDeliveries.inc();
         activeDeliveries.dec();
+        completedDeliveries.inc();
     }
 
     //incrementa la metrica di consegna in corso

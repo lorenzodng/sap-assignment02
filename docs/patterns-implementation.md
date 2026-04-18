@@ -89,10 +89,13 @@ This prevents cascading failures from propagating to the client when a downstrea
 
 Distributed Tracing was introduced to make the flow of each request visible across microservice boundaries, enabling latency issues to be diagnosed at the right level without inspecting each service in isolation.
 
-It is implemented across all microservices using OpenTelemetry, each of which initialises, in the infrastructure layer, a `TracingProvider` that configures an OTLP gRPC exporter and registers the service name as a resource  attribute, and a `TracingController` responsible for creating and managing spans for each incoming request.
+It is implemented across all microservices using OpenTelemetry: each microservice initialises, in the infrastructure layer, a `TracingProvider` that configures an OTLP gRPC exporter registers the service name as a resource  attribute,  and registers the `W3CTraceContextPropagator` for context propagation.  
+A `TracingController` is responsible for creating and managing spans for each incoming request. 
+In microservices that receive requests (`request-service`, `drone-service`, `delivery-service`), it extracts the incoming trace context from HTTP headers using a `TextMapGetter`, links the new span to the extracted parent context, and stores the active `Context` in the Vert.x context to make it available to subsequent asynchronous handlers.
 
-In the `api-gateway`, the controller creates a root span for each incoming request and constructs a `traceparent` header — formatted as `00-{traceId}-{spanId}-01` — which is propagated to downstream microservices via HTTP headers. 
-In each microservice, the `TracingController` reads the incoming `traceparent` header, reconstructs the parent `SpanContext`, and links the new span to it, building a distributed trace hierarchy. 
+In the `api-gateway`, the controller creates a root span and stores the active `Context` in the `RoutingContext`.
+
+When forwarding requests to downstream microservices, each client (e.g. `DroneServiceClient`, `DeliveryServiceClient`) retrieves the active `Context` from the Vert.x context and injects it into the outgoing HTTP headers using a `TextMapSetter`, propagating the `traceparent` header in W3C format.
 
 The resulting traces are collected by Jaeger and visualised in its UI, making it possible to observe the end-to-end latency of each request as it propagates through the chain: `api-gateway` → `request-service` → `drone-service` → `delivery-service`.
 

@@ -37,13 +37,13 @@ This closes the full loop described by the Health Check API pattern: the service
 
 **Scenario**:
 
-| Element     | Description                                                                                       |
-|-------------|---------------------------------------------------------------------------------------------------|
-| Source      | Operations team or automated monitoring system                                                    |
-| Stimulus    | Increased request volume causes latency to grow beyond acceptable thresholds                      |
-| Environment | System under load, all services running                                                           |
-| Response    | The anomaly is detected through metrics and traced to the specific service causing the bottleneck |
-| Measure     | The degraded component is identified within minutes, without requiring manual inspection of logs  |
+| Element     | Description                                                                                                                                 |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Source      | Operations team or automated monitoring system                                                                                              |
+| Stimulus    | Increased request volume causes latency to grow beyond acceptable thresholds                                                                |
+| Environment | System under load, all services running                                                                                                     |
+| Response    | The anomaly is detected through metrics and traced to the specific service causing the bottleneck                                           |
+| Measure     | The degraded component is identified within 15 seconds via Prometheus metrics or Jaeger traces, without requiring manual inspection of logs |
 
 **How the patterns support it**:
 

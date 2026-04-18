@@ -16,11 +16,15 @@ request\application\CreateShipmentRequestImpl.class
 request\infrastructure\TracingController.class
 request\domain\Shipment.class
 buildingblocks\domain\Entity.class
+request\application\ShipmentValidationException.class
 request\application\ShipmentRequestOrchestrator.class
 request\RequestServiceMain.class
 request\infrastructure\ShipmentRequestController.class
 request\application\CreateShipmentRequest.class
 request\application\ShipmentSchedulerImpl.class
+request\application\InvalidShipmentDataException.class
+request\infrastructure\TracingController$1.class
+request\infrastructure\DroneServiceException.class
 buildingblocks\application\InboundPort.class
 request\application\ShipmentScheduler.class
 request\domain\Position.class

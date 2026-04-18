@@ -1,5 +1,7 @@
 package request.application;
 
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -38,7 +40,7 @@ class ShipmentSchedulerIntegrationTest {
             Package shipmentPackage = new Package(UUID.randomUUID().toString(), 1.5, false);
             Shipment shipment = new Shipment(id, user, pickupLocation, deliveryLocation, date, time, timeLimit, shipmentPackage);
 
-            DroneServiceNotifier notifier = new DroneServiceClient(vertx, "http://localhost:8081");
+            DroneServiceNotifier notifier = new DroneServiceClient(vertx, "http://localhost:8081", OpenTelemetry.noop());
             ShipmentSchedulerImpl scheduler = new ShipmentSchedulerImpl(notifier, vertx);
             scheduler.schedule(shipment)
                     .onSuccess(v -> {

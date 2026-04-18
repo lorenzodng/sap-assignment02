@@ -41,8 +41,7 @@ public class ApiGatewayMain {
         } catch (Exception e) {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
         }
-        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics, requestCircuitBreaker, deliveryCircuitBreaker);
-
+        ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics, requestCircuitBreaker, deliveryCircuitBreaker, tracingProvider.getOpenTelemetry());
         //crea l'health checker
         HealthCheckerController healthChecker = new HealthCheckerController(vertx, requestServiceUrl, droneServiceUrl, deliveryServiceUrl);
 
