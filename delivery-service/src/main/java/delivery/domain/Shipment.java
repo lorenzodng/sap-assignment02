@@ -57,7 +57,9 @@ public class Shipment implements AggregateRoot<String> {
         }
         double elapsedHours = (System.currentTimeMillis() - assignedAt) / MS_TO_HOURS;
         double distanceCovered = deliverySpeed * elapsedHours;
-        double totalDistance = GeoUtils.haversine(droneInitialPosition.getLatitude(), droneInitialPosition.getLongitude(), pickupPosition.getLatitude(), pickupPosition.getLongitude()) + GeoUtils.haversine(pickupPosition.getLatitude(), pickupPosition.getLongitude(), deliveryPosition.getLatitude(), deliveryPosition.getLongitude());
+        double distanceToPickup = GeoUtils.haversine(droneInitialPosition.getLatitude(), droneInitialPosition.getLongitude(), pickupPosition.getLatitude(), pickupPosition.getLongitude());
+        double distanceToDelivery = GeoUtils.haversine(pickupPosition.getLatitude(), pickupPosition.getLongitude(), deliveryPosition.getLatitude(), deliveryPosition.getLongitude());
+        double totalDistance = distanceToPickup + distanceToDelivery;
         double remainingDistance = Math.max(0, totalDistance - distanceCovered);
         return (int) Math.ceil((remainingDistance / deliverySpeed) * MINUTES_IN_HOUR);
     }
