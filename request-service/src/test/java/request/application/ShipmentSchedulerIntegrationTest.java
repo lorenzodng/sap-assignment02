@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(VertxExtension.class)
 class ShipmentSchedulerIntegrationTest {
 
-    //verifica che una richiesta valida notifichi il drone-service
     @Test
     void immediatePickupNotifiesDroneService(VertxTestContext testContext) {
         Vertx vertx = Vertx.vertx();

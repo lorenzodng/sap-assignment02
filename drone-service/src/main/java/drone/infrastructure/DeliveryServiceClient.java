@@ -15,15 +15,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//client che notifica l'assegnazione del drone verso delivery-service
 @Adapter
 public class DeliveryServiceClient implements DeliveryServiceNotifier {
 
     private static final Logger log = LoggerFactory.getLogger(DeliveryServiceClient.class);
     private final WebClient client;
     private final String deliveryServiceUrl;
-    private final OpenTelemetry openTelemetry; //instrumentation library per il tracing
-    private static final TextMapSetter<HttpRequest<Buffer>> SETTER = (carrier, key, value) -> carrier.putHeader(key, value); //definisce come iniettare il contesto di tracing negli header HTTP in uscita
+    private final OpenTelemetry openTelemetry;
+    private static final TextMapSetter<HttpRequest<Buffer>> SETTER = (carrier, key, value) -> carrier.putHeader(key, value);
 
     public DeliveryServiceClient(Vertx vertx, String deliveryServiceUrl, OpenTelemetry openTelemetry) {
         this.client = WebClient.create(vertx);
@@ -31,15 +30,9 @@ public class DeliveryServiceClient implements DeliveryServiceNotifier {
         this.openTelemetry = openTelemetry;
     }
 
-    //invia il messaggio di drone assegnato
-    /*
-    1) request-service contatta drone-service (in DroneAssignment)
-    2) drone-service aspetta la risposta di stato da delivery-service per sapere cosa rispondere a request-service (con "assignDroneToShipment" in DroneAssignment)
-    */
     @Override
     public Future<Void> notifyDroneAssigned(String shipmentId, Drone drone, double pickupLatitude, double pickupLongitude, double deliveryLatitude, double deliveryLongitude) {
 
-        //costruisce il messaggio
         JSONObject body = new JSONObject();
         body.put("assigned", true);
         body.put("droneId", drone.getId());
@@ -52,54 +45,47 @@ public class DeliveryServiceClient implements DeliveryServiceNotifier {
         body.put("deliveryLongitude", deliveryLongitude);
         body.put("assignedAt", System.currentTimeMillis());
 
-
         HttpRequest<Buffer> request = client.putAbs(deliveryServiceUrl + "/shipments/" + shipmentId + "/assignment").putHeader("Content-Type", "application/json");
-        Context otelContext = Vertx.currentContext().get("otelContext"); //recupera il contesto tracing dal contesto Vert.x
-        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER); //inietta il contesto tracing nell'header http
+        Context otelContext = Vertx.currentContext().get("otelContext");
+        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER);
         return request.sendBuffer(Buffer.buffer(body.toString()))
-                .compose(response -> { //gestisce casi errore/indisponibilita di delivery-service
+                .compose(response -> {
                     if (response.statusCode() >= 200 && response.statusCode() < 300) {
                         return Future.succeededFuture();
                     } else {
                         return Future.failedFuture(new DeliveryServiceException("Delivery service error: " + response.statusCode()));
                     }
                 })
-                .onSuccess(res -> { //in caso di successo
+                .onSuccess(res -> {
                     log.info("Drone {} assigned to shipment {}", drone.getId(), shipmentId);
                     log.info("Shipment {} drone assigned notified", shipmentId);
                 })
-                .onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)) // in caso di fallimento
-                .mapEmpty(); //trasforma il risultato in Future<Void>
+                .onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err))
+                .mapEmpty();
     }
 
-    //invia il messaggio di drone non disponibile
-    /*
-    1) request-service contatta drone-service (in DroneAssignment)
-    2) drone-service aspetta la risposta di stato da delivery-service per sapere cosa rispondere a request-service (con "assignDroneToShipment" in DroneAssignment)
-    */
     @Override
     public Future<Void> notifyDroneNotAvailable(String shipmentId) {
 
-        //costruisce il messaggio
         JSONObject body = new JSONObject();
         body.put("assigned", false);
 
         HttpRequest<Buffer> request = client.putAbs(deliveryServiceUrl + "/shipments/" + shipmentId + "/assignment").putHeader("Content-Type", "application/json");
-        Context otelContext = Vertx.currentContext().get("otelContext"); //recupera il contesto OTel dal contesto Vert.x
-        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER); //inietta il contesto tracing nell'header http
+        Context otelContext = Vertx.currentContext().get("otelContext");
+        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER);
         return request.sendBuffer(Buffer.buffer(body.toString()))
                 .compose(response -> {
-                    if (response.statusCode() >= 200 && response.statusCode() < 300) { //gestisce casi errore/indisponibilita di delivery-service
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) {
                         return Future.succeededFuture();
                     } else {
                         return Future.failedFuture(new DeliveryServiceException("Delivery service error: " + response.statusCode()));
                     }
                 })
-                .onSuccess(res -> { //in caso di successo
+                .onSuccess(res -> {
                     log.warn("No available drones for shipment {}", shipmentId);
                     log.warn("Shipment {} drone not available notified", shipmentId);
                 })
-                .onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err)) //in caso di fallimento)
-                .mapEmpty(); //trasforma il risultato in Future<Void>
+                .onFailure(err -> log.error("Failed to notify delivery service for shipment {}", shipmentId, err))
+                .mapEmpty();
     }
 }

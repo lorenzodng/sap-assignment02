@@ -1,6 +1,5 @@
 package delivery.domain;
 
-//evento di completamento consegna - contiene tutte le informazioni necessarie per ricostruire lo stato dell'aggregato spedizione
 public class ShipmentCompleted implements ShipmentEvent {
 
     private final String shipmentId;

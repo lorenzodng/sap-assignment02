@@ -4,7 +4,6 @@ import buildingblocks.domain.Entity;
 
 public class Package implements Entity<String> {
 
-    //final perché le caratteristiche fisiche del pacco non cambiano
     private final String id;
     private final double weight;
     private final boolean fragile;

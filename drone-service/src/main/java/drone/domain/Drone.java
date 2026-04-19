@@ -10,13 +10,11 @@ public class Drone implements Entity<String> {
     public static final double INITIAL_BATTERY = 100.0;
     public static final double WEIGHT_CAPACITY = 5.0;
     private final String id;
-    private double batteryCapacity;
-    private Position position;
+    private final Position position;
     private boolean available;
 
     public Drone(String id, Position position) {
         this.id = id;
-        this.batteryCapacity = INITIAL_BATTERY;
         this.position = position;
         this.available = true;
     }
@@ -24,10 +22,6 @@ public class Drone implements Entity<String> {
     @Override
     public String getId() {
         return id;
-    }
-
-    public double getBatteryCapacity() {
-        return batteryCapacity;
     }
 
     public Position getPosition() {

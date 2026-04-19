@@ -11,14 +11,12 @@ class ShipmentManagerImplTest {
 
     private ShipmentManagerImpl manager;
 
-    //crea l'event store e il manager
     @BeforeEach
     void setUp() {
         ShipmentEventStore eventStore = new InMemoryShipmentEventStore();
         manager = new ShipmentManagerImpl(eventStore, null);
     }
 
-    //verifica che la spedizione è schedulata dopo che il drone è stato assegnato
     @Test
     void shipmentIsScheduledAfterAssignment() {
         String id = "test-id";

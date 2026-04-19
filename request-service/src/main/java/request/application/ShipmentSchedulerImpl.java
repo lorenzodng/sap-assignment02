@@ -6,7 +6,6 @@ import request.domain.Shipment;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-//verifica se è il tempo di assegnare il drone
 public class ShipmentSchedulerImpl implements ShipmentScheduler {
 
     private final DroneServiceNotifier droneServiceNotifier;
@@ -22,10 +21,9 @@ public class ShipmentSchedulerImpl implements ShipmentScheduler {
         LocalDateTime pickupDateTime = LocalDateTime.of(shipment.getPickupDate(), shipment.getPickupTime());
         long delayMs = Duration.between(LocalDateTime.now(), pickupDateTime).toMillis();
 
-        //se la data/ora è già passata o è adesso, il drone parte
         if (delayMs <= 0) {
             return droneServiceNotifier.notifyShipmentRequest(shipment);
-        } else { //altrimenti attende
+        } else {
             vertx.setTimer(delayMs, id -> droneServiceNotifier.notifyShipmentRequest(shipment));
             return Future.succeededFuture();
         }

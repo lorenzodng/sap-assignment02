@@ -22,18 +22,14 @@ public class ApiGatewayMain {
         int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
         int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
-        //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
-        //crea i circuit braker
         RequestServiceCircuitBreaker requestCircuitBreaker = new RequestServiceCircuitBreaker();
         DeliveryServiceCircuitBreaker deliveryCircuitBreaker = new DeliveryServiceCircuitBreaker();
 
-        //crea il tracing
         TracingProvider tracingProvider = new TracingProvider(jaegerEndpoint, "api-gateway");
         TracingController tracingController = new TracingController(tracingProvider);
 
-        //crea i controller
         ApiGatewayMetrics metrics = null;
         try {
             metrics = new PrometheusApiGatewayMetricsProxy(metricsPort);
@@ -42,19 +38,16 @@ public class ApiGatewayMain {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
         }
         ApiGatewayController apiGatewayController = new ApiGatewayController(vertx, requestServiceUrl, deliveryServiceUrl, metrics, requestCircuitBreaker, deliveryCircuitBreaker, tracingProvider.getOpenTelemetry());
-        //crea l'health checker
+
         HealthCheckerController healthChecker = new HealthCheckerController(vertx, requestServiceUrl, droneServiceUrl, deliveryServiceUrl);
 
-        //crea il router e registra le rotte
         Router router = Router.router(vertx);
         tracingController.registerRoutes(router);
         apiGatewayController.registerRoutes(router);
         healthChecker.registerRoutes(router);
 
-        //configura l'accesso all'interfaccia
         router.route("/ui/*").handler(StaticHandler.create("webroot"));
 
-        //avvia il server HTTP
         vertx.createHttpServer().requestHandler(router).listen(port);
 
         log.info("Api gateway started on port {}", port);

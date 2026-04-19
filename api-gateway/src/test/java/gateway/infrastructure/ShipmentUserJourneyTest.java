@@ -28,39 +28,36 @@ class ShipmentUserJourneyTest {
         client = WebClient.create(vertx);
     }
 
-    //verifica il flusso di utilizzo del sistema dalla richiesta di spedizione al tracking
     @Test
     void testCreationAndStatusJourney(VertxTestContext ctx) {
         JsonObject shipmentBody = createShipmentPayload();
         createShipmentRequest(shipmentBody, ctx);
     }
 
-    //crea la richiesta di spedizione
     private void createShipmentRequest(JsonObject body, VertxTestContext ctx) {
         client.post(GATEWAY_PORT, "localhost", "/shipments").sendJsonObject(body)
                 .onSuccess(response -> {
-                    assertEquals(HTTP_CREATED, response.statusCode()); //verifica se la richiesta è stata elaborata correttamente dal server
-                    String id = response.bodyAsString().trim(); //estrae l'id dalla richiesta
-                    assertNotNull(id); //verifica se l'id non è nullo
+                    assertEquals(HTTP_CREATED, response.statusCode());
+                    String id = response.bodyAsString().trim();
+                    assertNotNull(id);
 
-                    waitForShipmentStatus(id, ctx, MAX_POLLING_ATTEMPTS); //controlla lo stato della consegna (tracking)
+                    waitForShipmentStatus(id, ctx, MAX_POLLING_ATTEMPTS);
                 })
-                .onFailure(ctx::failNow); //se c'è un problema, fallisce il test immediatamente
+                .onFailure(ctx::failNow);
     }
 
-    //controlla lo stato della consegna
     private void waitForShipmentStatus(String shipmentId, VertxTestContext ctx, int remainingAttempts) {
         client.get(GATEWAY_PORT, "localhost", "/shipments/" + shipmentId + "/status")
                 .send()
                 .onSuccess(response -> {
                     if (response.statusCode() == HTTP_OK) {
-                        JsonObject body = response.bodyAsJsonObject(); //recupera la risposta
-                        assertEquals(shipmentId, body.getString("id")); //verifica se la risposta è legata alla richiesta emessa
-                        assertNotNull(body.getString("status")); //verifica se lo stato non è nullo
+                        JsonObject body = response.bodyAsJsonObject();
+                        assertEquals(shipmentId, body.getString("id"));
+                        assertNotNull(body.getString("status"));
 
-                        ctx.completeNow(); //chiude il test
+                        ctx.completeNow();
                     } else if (remainingAttempts > 1) {
-                        vertx.setTimer(POLLING_RETRY_DELAY_MS, id -> waitForShipmentStatus(shipmentId, ctx, remainingAttempts - 1)); //esegue polling
+                        vertx.setTimer(POLLING_RETRY_DELAY_MS, id -> waitForShipmentStatus(shipmentId, ctx, remainingAttempts - 1));
                     } else {
                         ctx.failNow(new Throwable());
                     }
@@ -68,7 +65,6 @@ class ShipmentUserJourneyTest {
                 .onFailure(ctx::failNow);
     }
 
-    //crea il messaggio json
     private JsonObject createShipmentPayload() {
         String userId = "mario-rossi-01";
         String name = "Mario";

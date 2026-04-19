@@ -4,7 +4,6 @@ import buildingblocks.domain.ValueObject;
 
 public class Position implements ValueObject {
 
-    //final perché ValueObject è immutabile
     private final double latitude;
     private final double longitude;
 

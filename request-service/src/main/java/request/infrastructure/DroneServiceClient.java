@@ -15,15 +15,14 @@ import org.slf4j.LoggerFactory;
 import request.application.DroneServiceNotifier;
 import request.domain.Shipment;
 
-//client che notifica la creazione della richiesta di spedizione verso drone-service
 @Adapter
 public class DroneServiceClient implements DroneServiceNotifier {
 
     private static final Logger log = LoggerFactory.getLogger(DroneServiceClient.class);
     private final WebClient client;
     private final String droneServiceUrl;
-    private final OpenTelemetry openTelemetry; //instrumentation library per il tracing
-    private static final TextMapSetter<HttpRequest<Buffer>> SETTER = (carrier, key, value) -> carrier.putHeader(key, value); //definisce come iniettare il contesto di tracing negli header HTTP in uscita
+    private final OpenTelemetry openTelemetry;
+    private static final TextMapSetter<HttpRequest<Buffer>> SETTER = (carrier, key, value) -> carrier.putHeader(key, value);
 
     public DroneServiceClient(Vertx vertx, String droneServiceUrl, OpenTelemetry openTelemetry) {
         this.client = WebClient.create(vertx);
@@ -31,13 +30,9 @@ public class DroneServiceClient implements DroneServiceNotifier {
         this.openTelemetry = openTelemetry;
     }
 
-    /*
-    1) l'utente invoca l'api-gateway che contatta request-service (in ShipmentRequestController)
-    2) request-service aspetta la risposta di stato da drone-service per sapere cosa rispondere all'api-gateway (con "createShipment" in ShipmentRequestController)
-    3) l'api-gateway mostra il messaggio all'utente
-     */
     @Override
     public Future<Void> notifyShipmentRequest(Shipment shipment) {
+
         JSONObject body = new JSONObject();
         body.put("shipmentId", shipment.getId());
         body.put("pickupLatitude", shipment.getPickupLocation().getLatitude());
@@ -47,11 +42,11 @@ public class DroneServiceClient implements DroneServiceNotifier {
         body.put("packageWeight", shipment.getPackage().getWeight());
         body.put("deliveryTimeLimit", shipment.getDeliveryTimeLimit());
 
-        Context otelContext = Vertx.currentContext().get("otelContext"); //recupera il contesto OTel dal contesto vertx
+        Context otelContext = Vertx.currentContext().get("otelContext");
         HttpRequest<Buffer> request = client.postAbs(droneServiceUrl + "/shipments/assign").putHeader("Content-Type", "application/json");
-        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER); //inietta il contesto tracing nell'header http
+        openTelemetry.getPropagators().getTextMapPropagator().inject(otelContext, request, SETTER);
         return request.sendBuffer(Buffer.buffer(body.toString()))
-                .compose(response -> { //gestisce casi errore/indisponibilita di drone-service
+                .compose(response -> {
                     if (response.statusCode() >= 200 && response.statusCode() < 300) {
                         return Future.succeededFuture();
                     } else {
@@ -60,6 +55,6 @@ public class DroneServiceClient implements DroneServiceNotifier {
                 })
                 .onSuccess(res -> log.info("Shipment {} request notified", shipment.getId()))
                 .onFailure(err -> log.error("Failed to notify drone service for shipment {}", shipment.getId(), err))
-                .mapEmpty(); //trasforma il risultato in Future<Void>
+                .mapEmpty();
     }
 }

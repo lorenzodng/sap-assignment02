@@ -18,14 +18,11 @@ public class DeliveryServiceMain {
         int port = System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : Integer.parseInt(dotenv.get("PORT"));
         int metricsPort = System.getenv("METRICS_PORT") != null ? Integer.parseInt(System.getenv("METRICS_PORT")) : Integer.parseInt(dotenv.get("METRICS_PORT"));
 
-        //istanza che contiene l'event loop per gestire le richieste in modo asincrono
         Vertx vertx = Vertx.vertx();
 
-        //crea il tracing
         TracingProvider tracingProvider = new TracingProvider(jaegerEndpoint, "delivery-service");
         TracingController tracingController = new TracingController(tracingProvider);
 
-        //crea l'event store
         ShipmentEventStore eventStore = new InMemoryShipmentEventStore();
 
         DeliveryMetrics metrics = null;
@@ -36,22 +33,18 @@ public class DeliveryServiceMain {
             log.error("Failed to start Prometheus metrics server: {}", e.getMessage());
         }
 
-        //crea il manager
         ShipmentManager shipmentManager = new ShipmentManagerImpl(eventStore, metrics);
 
-        //crea i controller
         ShipmentAssignmentController assignmentController = new ShipmentAssignmentController(shipmentManager);
         TrackingDeliveryController trackingController = new TrackingDeliveryController(shipmentManager);
         HealthController healthController = new HealthController();
 
-        //crea il router e registra le rotte
         Router router = Router.router(vertx);
         tracingController.registerRoutes(router);
         assignmentController.registerRoutes(router);
         trackingController.registerRoutes(router);
         healthController.registerRoutes(router);
 
-        //avvia il server HTTP
         vertx.createHttpServer().requestHandler(router).listen(port);
 
         log.info("Delivery service started on port {}", port);

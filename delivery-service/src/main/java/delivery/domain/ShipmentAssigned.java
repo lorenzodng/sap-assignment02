@@ -1,6 +1,5 @@
 package delivery.domain;
 
-//evento di assegnazione drone - contiene tutte le informazioni necessarie per ricostruire lo stato dell'aggregato spedizione
 public class ShipmentAssigned implements ShipmentEvent {
 
     private final String shipmentId;

@@ -8,7 +8,6 @@ import request.application.InvalidShipmentDataException;
 import request.application.ShipmentRequestOrchestrator;
 import request.application.ShipmentValidationException;
 
-//controller che riceve le richieste dal client
 @Adapter
 public class ShipmentRequestController {
 
@@ -18,12 +17,10 @@ public class ShipmentRequestController {
         this.orchestrator = orchestrator;
     }
 
-    //registra la rotta
     public void registerRoutes(Router router) {
-        router.post("/shipments").handler(BodyHandler.create()).handler(this::createShipment); //quando arriva una richiesta sulla rotta "/shipments", invoca il metodo
+        router.post("/shipments").handler(BodyHandler.create()).handler(this::createShipment);
     }
 
-    //crea la richiesta
     private void createShipment(RoutingContext ctx) {
         var body = ctx.body().asJsonObject();
         var pickup = body.getJsonObject("pickupLocation");

@@ -8,7 +8,6 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.json.JSONObject;
 
-//controller che riceve le notifiche di richiesta creata da request-service
 @Adapter
 public class DroneAssignmentController {
 
@@ -18,17 +17,14 @@ public class DroneAssignmentController {
         this.orchestrator = orchestrator;
     }
 
-    //rotte
     public void registerRoutes(Router router) {
         router.post("/shipments/assign").handler(BodyHandler.create()).handler(this::assignDroneToShipment);
     }
 
-    //assegna un drone alla spedizione
     private void assignDroneToShipment(RoutingContext ctx) {
-        JSONObject body = new JSONObject(ctx.body().asString()); //recupera il body dal messaggio
+        JSONObject body = new JSONObject(ctx.body().asString());
         String shipmentId = body.getString("shipmentId");
 
-        String traceparent = ctx.request().getHeader("traceparent");
         orchestrator.orchestrateAssignment(shipmentId, body.getDouble("pickupLatitude"), body.getDouble("pickupLongitude"), body.getDouble("deliveryLatitude"), body.getDouble("deliveryLongitude"), body.getDouble("packageWeight"), body.getInt("deliveryTimeLimit"))
                 .onSuccess(v -> ctx.response().setStatusCode(201).end())
                 .onFailure(err -> {

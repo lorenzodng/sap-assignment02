@@ -11,7 +11,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
-//crea gli span e gestisce la loro esecuzione
 @Adapter
 public class TracingController {
 
@@ -27,7 +26,7 @@ public class TracingController {
         public String get(HttpServerRequest carrier, String key) {
             return carrier.getHeader(key);
         }
-    }; //definisce come leggere gli header HTTP per estrarre il contesto di tracing
+    };
 
     public TracingController(TracingProvider tracingProvider) {
         this.tracer = tracingProvider.getTracer();
@@ -38,18 +37,17 @@ public class TracingController {
         router.route().handler(this::trace);
     }
 
-    //costruisce la sequenza di span
     private void trace(RoutingContext ctx) {
-        String spanName = ctx.request().method().name() + " " + ctx.request().path(); //costruisce il nome dello span a partire dal metodo http e dal path
-        SpanBuilder spanBuilder = tracer.spanBuilder(spanName); //crea il builder dello span - serve per preparare lo span (es. aggiungere il padre, aggiungere attributi ...)
+        String spanName = ctx.request().method().name() + " " + ctx.request().path();
+        SpanBuilder spanBuilder = tracer.spanBuilder(spanName);
 
-        Context extractedContext = openTelemetry.getPropagators().getTextMapPropagator().extract(Context.current(), ctx.request(), GETTER); //estrae il contesto di tracing dagli header in ingresso
-        spanBuilder.setParent(extractedContext); //collega il nuovo span (ancora non creato definitivamente) allo span padre
-        Span span = spanBuilder.startSpan(); //crea e avvia lo span
-        try (Scope scope = span.makeCurrent()) { //imposta lo span come span corrente
-            Vertx.currentContext().put("otelContext", Context.current()); //salva il contesto OTel nel contesto Vert.x
-            ctx.addEndHandler(v -> span.end()); //chiude lo span quando la risposta viene inviata al client
-            ctx.next(); //passa la richiesta al prossimo handler (senza di questo il programma si bloccherebbe qui, perchè nel main è il primo a essere registrato alle rotte)
+        Context extractedContext = openTelemetry.getPropagators().getTextMapPropagator().extract(Context.current(), ctx.request(), GETTER);
+        spanBuilder.setParent(extractedContext);
+        Span span = spanBuilder.startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            Vertx.currentContext().put("otelContext", Context.current());
+            ctx.addEndHandler(v -> span.end());
+            ctx.next();
         }
     }
 }
