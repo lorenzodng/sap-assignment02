@@ -7,5 +7,6 @@ import java.util.List;
 @OutboundPort
 public interface DroneRepository {
     List<Drone> findAll();
+
     void updateAvailability(String droneId, boolean available);
 }

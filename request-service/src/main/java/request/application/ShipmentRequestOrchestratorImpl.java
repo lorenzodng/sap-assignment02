@@ -30,7 +30,7 @@ public class ShipmentRequestOrchestratorImpl implements ShipmentRequestOrchestra
             metrics.incrementValidation(true);
 
             //step 2: validate timing constraints and notify drone-service
-            return scheduler.schedule(shipment).map(v -> shipment); //trasforma il valore di ritorno in una Future
+            return scheduler.schedule(shipment).map(v -> shipment);
         } catch (Exception e) {
             metrics.incrementValidation(false);
             return Future.failedFuture(e);

@@ -8,11 +8,11 @@ public class Shipment implements AggregateRoot<String> {
     private static final double MS_TO_HOURS = 3600000.0;
     private static final int MINUTES_IN_HOUR = 60;
     private final String id;
-    private Position droneInitialPosition;
-    private Position pickupPosition;
-    private Position deliveryPosition;
-    private long assignedAt;
-    private double deliverySpeed;
+    private final Position droneInitialPosition;
+    private final Position pickupPosition;
+    private final Position deliveryPosition;
+    private final long assignedAt;
+    private final double deliverySpeed;
     private ShipmentStatus status;
 
     public Shipment(String id, Position droneInitialPosition, Position pickupPosition, Position deliveryPosition, long assignedAt, double deliverySpeed) {
