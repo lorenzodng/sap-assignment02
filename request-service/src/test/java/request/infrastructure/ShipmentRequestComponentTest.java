@@ -51,18 +51,18 @@ class ShipmentRequestComponentTest {
     @Test
     void validShipmentRequestReturns201(VertxTestContext ctx) {
         String body = """
-            {
-                "userId": "user-1",
-                "userName": "Mario",
-                "userSurname": "Rossi",
-                "pickupLocation": {"latitude": 41.90, "longitude": 12.49},
-                "deliveryLocation": {"latitude": 41.92, "longitude": 12.51},
-                "pickupDate": "2030-01-01",
-                "pickupTime": "10:00",
-                "deliveryTimeLimit": 60,
-                "package": {"weight": 1.5, "fragile": false}
-            }
-            """;
+                {
+                    "userId": "user-1",
+                    "userName": "Mario",
+                    "userSurname": "Rossi",
+                    "pickupLocation": {"latitude": 41.90, "longitude": 12.49},
+                    "deliveryLocation": {"latitude": 41.92, "longitude": 12.51},
+                    "pickupDate": "2030-01-01",
+                    "pickupTime": "10:00",
+                    "deliveryTimeLimit": 60,
+                    "package": {"weight": 1.5, "fragile": false}
+                }
+                """;
 
         client.post(PORT, HOST, "/shipments").putHeader("Content-Type", "application/json").sendBuffer(Buffer.buffer(body))
                 .onSuccess(response -> {

@@ -25,6 +25,8 @@ class ShipmentSchedulerIntegrationTest {
         AtomicBoolean requestReceived = new AtomicBoolean(false);
 
         vertx.createHttpServer().requestHandler(req -> {
+
+            //step 2: the flag is updated
             requestReceived.set(true);
             req.response().setStatusCode(200).end();
         }).listen(8081).onSuccess(server -> {
@@ -40,9 +42,11 @@ class ShipmentSchedulerIntegrationTest {
 
             DroneServiceNotifier notifier = new DroneServiceClient(vertx, "http://localhost:8081", OpenTelemetry.noop());
             ShipmentSchedulerImpl scheduler = new ShipmentSchedulerImpl(notifier, vertx);
+
+            //step 1: the request is sent
             scheduler.schedule(shipment)
                     .onSuccess(v -> {
-                        assertTrue(requestReceived.get());
+                        assertTrue(requestReceived.get()); //step 3: the check is executed
                         testContext.completeNow();
                     })
                     .onFailure(testContext::failNow);
